@@ -28,7 +28,7 @@ def norm_distribution(temperature,mass,num_ptcl):
     :returns: 1d array array of velocities
     """
     tempK = temperature*cst.EV2K
-    scale = 1.0/(mass/cst.KB/tempK)
+    scale = np.sqrt(cst.KB*tempK/mass)
     vels = norm.rvs(loc=0.0, scale=scale, size=num_ptcl)
     
     return vels

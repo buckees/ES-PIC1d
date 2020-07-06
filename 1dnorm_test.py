@@ -24,8 +24,7 @@ num_ptcl = 1000 # number of particles
 time_step = 1e-12 # unit in s
 num_iter = 200 # number of iterations
 
-print(Arp.temp,Arp.mass)
-vels = norm_distribution(Arp.temp,Arp.mass,num_ptcl)
+vels = norm_distribution(N2.temp,N2.mass,num_ptcl)
 
 fig, (ax0,ax1) = plt.subplots(2,1)
 ax0.hist(vels, density=True, histtype='stepfilled', alpha=0.5)
