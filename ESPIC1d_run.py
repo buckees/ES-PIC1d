@@ -16,13 +16,20 @@ length = 0.01 # lenght of domain, unit in m
 press_mT = 100.0 # pressure, unit in mTorr
 pressure = press_mT/1e3*133.3 # unit in Pa, 1 Torr = 133.322 Pa
 eon_temp = 2.0 # unit in eV
-Arp.temp = 0.1 # unit in eV
+Arp.temp = 100.1 # unit in eV
 
 # Model Parameters
 num_cell = 10 # number of cells
-num_ptcl = 100 # number of particles
+num_ptcl = 1000 # number of particles
 time_step = 1e-12 # unit in s
 num_iter = 200 # number of iterations
 
-vArp_therm = thermal_velocity(Arp.charge, Arp.temp, Arp.mass)
-vArp_maxwell = maxwell_velocity_distribution(vArp_therm,100)
+print(Arp.temp,Arp.mass)
+vels = norm_distribution(Arp.temp,Arp.mass,num_ptcl)
+
+fig, (ax0,ax1) = plt.subplots(2,1)
+ax0.hist(vels, density=True, histtype='stepfilled', alpha=0.5)
+ax0.legend(loc='best', frameon=False)
+
+ax1.plot(vels,range(len(vels)),'o')
+plt.show()

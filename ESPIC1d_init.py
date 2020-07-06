@@ -2,7 +2,7 @@
 # This ES-PIC1d_init.py initialize the PIC simulation
 
 import Constants as cst
-import scipy.stats as stats
+from scipy.stats import norm
 import numpy as np
 
 def thermal_velocity(charge, temperature, mass):
@@ -14,6 +14,25 @@ def thermal_velocity(charge, temperature, mass):
     :return: thermal velocity in m/s
     """
     return np.sqrt(2*abs(charge)*temperature/mass)
+
+def norm_distribution(temperature,mass,num_ptcl):
+    """
+    Returns an array of velocities sampled from the Normal distribution
+    1d maxwell velocity distribution is a normal distribution
+    f(v) = sqrt(m/2/pi/Kb/T)*exp(-v**2*m/2/kb/T)
+    norm distribution f(x) = sqrt(1/2/pi)*exp(-x**2/2)
+    v = x*m/kb/T, so scale = 1(m/kb/T)
+    :param temperature: particle temperature, in eV
+    :param mass: particle mass
+    :param num_velocities: number of velocities to generate
+    :returns: 1d array array of velocities
+    """
+    tempK = temperature*cst.EV2K
+    scale = 1.0/(mass/cst.KB/tempK)
+    vels = norm.rvs(loc=0.0, scale=scale, size=num_ptcl)
+    
+    return vels
+    
 
 def maxwell_velocity_distribution(v_thermal, num_velocities):
     """
