@@ -7,8 +7,9 @@ import Particle as ptcl
 from scipy.stats import norm
 import numpy as np
 import pandas as pd
+import math
 
-def den_asgmt(posn, gridx, den_per_ptcl, den_limit):
+def den_asgmt(posn, gridx, dx):
     """
     Return the density distribution on grids
     Assign the density to each grid/node based on 
@@ -19,4 +20,11 @@ def den_asgmt(posn, gridx, den_per_ptcl, den_limit):
     :param gridx: grid/cell_boundary coordinate in x direction
     :param den_per_ptcl: density contained in a particle
     """
-    pass
+    density = np.full((len(gridx),),1.0e-5)
+    for i, p in enumerate(posn):
+        p = p/dx
+        frac, whole = math.modf(p)
+        whole = int(whole)
+        density[whole] = 1-frac
+        density[whole+1] = frac
+    return density

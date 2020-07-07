@@ -25,10 +25,11 @@ def norm_distribution(num_ptcl,temperature,mass):
     norm distribution f(x) = sqrt(1/2/pi)*exp(-x**2/2)
     v = x*m/kb/T, so scale = 1(m/kb/T)
     :param temperature: particle temperature, in eV
-    :param mass: particle mass
+    :param mass: particle mass, in AMU
     :param num_velocities: number of velocities to generate
     :returns: 1d array array of velocities
     """
+    mass = mass*cst.AMU
     tempK = temperature*cst.EV2K
     scale = np.sqrt(cst.KB*tempK/mass)
     vels = norm.rvs(loc=0.0, scale=scale, size=num_ptcl)
@@ -65,7 +66,7 @@ def init_data(num_ptcl=10,temperature=0.025,mass=cst.AMU,width=0.01):
     vels = norm_distribution(num_ptcl,temperature,mass)
     data = pd.DataFrame(np.vstack((posn, vels)).T,
                         columns=['position','velocity'])
-    return data
+    return data.reset_index()
 
 def init_mesh(ncellx=10,width=0.01):
     """
