@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# This ES-PIC_run.py runs the PIC simulation
+# This .py test the 1d normal velocity distribution in ESPIC1d_init.py
 # All in SI unit
 
 import Constants as cst
