@@ -2,8 +2,10 @@
 # This ES-PIC1d_init.py initialize the PIC simulation
 
 import Constants as cst
+import Particle as ptcl
 from scipy.stats import norm
 import numpy as np
+import pandas as pd
 
 def thermal_velocity(charge, temperature, mass):
     """
@@ -15,7 +17,7 @@ def thermal_velocity(charge, temperature, mass):
     """
     return np.sqrt(2*abs(charge)*temperature/mass)
 
-def norm_distribution(temperature,mass,num_ptcl):
+def norm_distribution(num_ptcl,temperature,mass):
     """
     Returns an array of velocities sampled from the Normal distribution
     1d maxwell velocity distribution is a normal distribution
@@ -33,26 +35,6 @@ def norm_distribution(temperature,mass,num_ptcl):
     
     return vels
     
-
-def maxwell_velocity_distribution(v_thermal, num_velocities):
-    """
-    Returns an array of velocities sampled from the Maxwell distribution
-    :param v_thermal: thermal velocity (most probable) of the distribution
-    :param num_velocities: number of velocities to generate
-    :returns: 2 by num_velocities array of velocities
-    """
-    a = v_thermal / np.sqrt(2)  # shape parameter of distribution
-
-    maxwell = stats.maxwell
-
-    speeds = maxwell.rvs(loc=0, scale=a, size=num_velocities)  # generate speeds
-    theta = np.random.rand(num_velocities) * 2 * np.pi  # select random angle
-
-    x_vels = speeds * np.sin(theta)
-    y_vels = speeds * np.cos(theta)
-
-    return np.stack((x_vels, y_vels))
-
 def debye_length(eps0, eon_temp, ne):
     """
     Calculate plasma debye length
@@ -62,6 +44,28 @@ def debye_length(eps0, eon_temp, ne):
     :return: debye length
     """
     return np.sqrt(eps0*cst.EPS0*eon_temp/ne/cst.UNIT_CHARGE)
+
+def init_posn(num_ptcl=10,width=0.01):
+    """
+    Return the random initial positions
+    :param num_ptcl: number of particles
+    :param ptcl_type: the type of particles, must be pre-defined in Particle.py
+    """
+    return np.random.uniform(low=0.0, high=1.0, size=(num_ptcl,))*width
+
+def init_data(num_ptcl=10,temperature=0.025,mass=cst.AMU,width=0.01):
+    """
+    return a DataFrame containing the particle positon and velocity
+    :param num_ptcl: number of particles
+    :param temperature: particle temperature, in eV
+    :param mass: particle mass
+    :param width: the width of domain/geometry
+    """
+    posn = init_posn(num_ptcl,width) # initial position
+    vels = norm_distribution(num_ptcl,temperature,mass)
+    data = pd.DataFrame(np.vstack((posn, vels)).T,
+                        columns=['position','velocity'])
+    return data
 
 def sinusoidal(amplitude, period, phase, t):
     return np.sin(2*np.pi*(t/period) + phase) * amplitude
