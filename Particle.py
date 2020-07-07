@@ -13,6 +13,6 @@ class Particle(object):
 
 Eon = Particle('E',    cst.EON_MASS, -1.0*cst.UNIT_CHARGE, 2.0)
 Arp = Particle('Ion',  32.0*cst.AMU,  1.0*cst.UNIT_CHARGE, 0.1)
-Ar  = Particle('Neut', 32.0*cst.AMU,  0.0*cst.UNIT_CHARGE, 0.025)
+Ar  = Particle('Bkg',  32.0*cst.AMU,  0.0*cst.UNIT_CHARGE, 0.025)
 H   = Particle('Neut',  1.0*cst.AMU,  0.0*cst.UNIT_CHARGE, 0.025)
-N2  = Particle('Neut', 28.0*cst.AMU,  0.0*cst.UNIT_CHARGE, 0.025)
+N2  = Particle('Bkg',  28.0*cst.AMU,  0.0*cst.UNIT_CHARGE, 0.025)
