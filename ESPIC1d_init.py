@@ -67,5 +67,28 @@ def init_data(num_ptcl=10,temperature=0.025,mass=cst.AMU,width=0.01):
                         columns=['position','velocity'])
     return data
 
+def init_mesh(ncellx=10,width=0.01):
+    """
+    return grid/cell_boundry coordiates, cell center coordinates and cell size
+    :param ncellx: number of cells in x direction
+    :param width: the width of domain/geometry
+    """
+    gridx, dx = np.linspace(0.0,width,ncellx+1,retstep=True)
+    cell_center = [np.mean(gridx[i:i+2]) for i in range(ncellx)]
+    return gridx, cell_center, dx
+
+def init_pot(ncellx=10,dx=0.01,pot_l=100.0,pot_r=0.0):
+    """
+    return initial potential and E-field
+    :param ncellx: number of cells in x direction
+    :param dx: the cell size in x direction
+    :param pot_l: the potential at left boundary
+    :param pot_r: the potential at right boundary
+    """
+    pot = np.linspace(pot_l,pot_r,ncellx+1)
+    efld = [(pot[i+1]-pot[i])/dx for i in range(ncellx)]
+    return pot, efld
+
+
 def sinusoidal(amplitude, period, phase, t):
     return np.sin(2*np.pi*(t/period) + phase) * amplitude
