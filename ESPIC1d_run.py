@@ -80,8 +80,8 @@ ax[1,2].plot(posn_Eon,vels_Eon,'bo')
 ax[1,2].plot(posn_Arp,vels_Arp,'ro')
 ax[1,2].set_title('remaining particles = %d' % num_ptcl)
 
-num_iter = 10001 # number of iterations
-nout_iter = 500
+num_iter = 11 # number of iterations
+nout_iter = 2
 for i in range(num_iter):
     # assign charge densities to grid nodes, unit in UNIT_CHARGE
     den_Eon = move.den_asgmt(posn_Eon,gridx,dx)*den_per_ptcl
@@ -94,7 +94,7 @@ for i in range(num_iter):
     posn_Eon, vels_Eon = move.move_ptcl(ptcl.Eon,posn_Eon,vels_Eon,efld,dt,width)
     posn_Arp, vels_Arp = move.move_ptcl(ptcl.Arp,posn_Arp,vels_Arp,efld,dt,width)
     num_ptcl = len(posn_Eon)
-    if i % 10 == 0: print('iter = %d' % i)
+    if i % 50 == 0: print('iter = %d' % i)
     if i % nout_iter == 0:
         # plot animation    
         for item in ax[1,:]:
@@ -112,10 +112,10 @@ for i in range(num_iter):
         ax[1,2].plot(posn_Arp,vels_Arp,'ro')
         ax[1,2].set_title('remaining particles = %d' % num_ptcl)
 #        fig.canvas.draw()
-        fig.savefig('/Figures/ITER_{:05}.png'.format(i))
+        fig.savefig('.\Figures\ITER_{:05}.png'.format(i))
 #        plt.pause(0.1)
 
-fig.savefig('ES-PIC1d.png')
+fig.savefig('ESPIC1d.png')
 #plt.show()
 # diagnostic plot
 #fig, (ax0,ax1,ax2) = plt.subplots(1,3, figsize=(9,3),
