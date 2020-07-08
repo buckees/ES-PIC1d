@@ -30,7 +30,7 @@ def Poisson_solver_1d(ncellx,width,den_chrg,bc):
     """
     # construct grids
     gridx, dx = np.linspace(0.0,width,ncellx+1,retstep=True)
-    den_chrg = den_chrg*cst.UNIT_CHARGE
+#    den_chrg = den_chrg*cst.UNIT_CHARGE/cst.EPS0
     # construct A
     A = np.zeros((ncellx+1,ncellx+1),dtype=np.float)
     A[0,0]       =  2.0; A[1,0]       = -1.0;
@@ -40,24 +40,36 @@ def Poisson_solver_1d(ncellx,width,den_chrg,bc):
         A[  i,i] =  2.0
         A[i+1,i] = -1.0
     invA = np.linalg.inv(A)
-    a = (bc[-1] - bc[0])/width
-    b = bc[0] + np.matmul(invA,den_chrg)[0]/cst.EPS0*dx*dx
-    pot = -np.matmul(invA,den_chrg)/cst.EPS0*dx*dx + a*gridx + b
+    invA_den_chrg = np.matmul(invA,den_chrg)*dx*dx
+    a = (bc[-1] - bc[0]+invA_den_chrg[-1]-invA_den_chrg[0])/width
+    b = bc[0] + invA_den_chrg[0] - a*gridx[0]
+    b1 = bc[-1] + invA_den_chrg[-1] - a*gridx[-1]
+    pot = -invA_den_chrg + a*gridx + b
     return pot
 
-width = 1.0
-ncellx = 100
-#den_chrg = np.zeros((ncellx+1,),dtype=np.float)
-gridx, dx = np.linspace(0.0,width,ncellx+1,retstep=True)
-den_chrg = np.power(gridx,1)*1e11
-den_chrg.shape
-
-pot = Poisson_solver_1d(ncellx,width,den_chrg,(100.0,0.0))
-pot.shape
-# diagnostic plot
-fig, (ax0,ax1) = plt.subplots(2,1, figsize=(8,4),
-      constrained_layout=True)
-ax0.plot(gridx,den_chrg)
-ax1.plot(gridx,pot)
-plt.show()
-print(pot[0],pot[-1])
+# plot diagnostics
+# validated with function below
+#phi_f = @(t) t.*cos(t); % inline function for the exact solution
+#rho_f = @(t) 2.*sin(t) + t.*cos(t); % inline function for the exact right-hand-side
+#
+#width = 6.28
+#ncellx = 100
+##den_chrg = np.zeros((ncellx+1,),dtype=np.float)
+#gridx, dx = np.linspace(0.0,width,ncellx+1,retstep=True)
+##den_chrg = (1-np.power(gridx,2))*1e11
+#den_chrg = np.sin(gridx) + np.multiply(gridx,np.cos(gridx))
+#den_chrg = -den_chrg
+#
+#pot = Poisson_solver_1d(ncellx,width,den_chrg,(0.0,6.28))
+#efld = [(pot[i+1]-pot[i])/dx for i in range(ncellx)]
+## diagnostic plot
+#fig, (ax0,ax1,ax2) = plt.subplots(1,3, figsize=(9,3),
+#      constrained_layout=True)
+#ax0.plot(gridx,den_chrg)
+#ax0.set_title('charge distribution')
+#ax1.plot(gridx,pot)
+#ax1.set_title('potential distribution')
+#ax2.plot(gridx[1:],efld)
+#ax2.set_title('E-field distribution')
+#plt.show()
+#print(pot[0],pot[-1])

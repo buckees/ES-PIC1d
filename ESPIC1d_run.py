@@ -17,9 +17,9 @@ ncellx = 100 # number of cells in x direction
 # Operation Conditions
 press_mT = 100.0 # pressure, in mTorr
 pressure = press_mT/1.0e3*cst.TORR2PA # in Pa, 1 Torr = 133.322 Pa
-nAr_init = pressure/(cst.KB*pctl.Ar.temp*cst.EV2K) # in m-3, N/V = P/(kb*T) ideal gas law
-pctl.Eon.temp = 2.0 # in eV
-pctl.Arp.temp = 0.1 # in eV
+nAr_init = pressure/(cst.KB*ptcl.Ar.temp*cst.EV2K) # in m-3, N/V = P/(kb*T) ideal gas law
+ptcl.Eon.temp = 2.0 # in eV
+ptcl.Arp.temp = 0.1 # in eV
 pot_l = 100.0 # in V, left boundary potential
 pot_r = 0.0 # in V, right boundary potential
 nEon_init = 1.0e14 # in m-3, initial electron density
