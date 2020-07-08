@@ -52,7 +52,7 @@ def init_posn(num_ptcl=10,width=0.01):
     :param num_ptcl: number of particles
     :param ptcl_type: the type of particles, must be pre-defined in Particle.py
     """
-    return np.random.uniform(low=0.0, high=1.0, size=(num_ptcl,))*width
+    return np.random.uniform(low=0.001, high=0.999, size=(num_ptcl,))*width
 
 def init_data(num_ptcl=10,temperature=0.025,mass=cst.AMU,width=0.01):
     """

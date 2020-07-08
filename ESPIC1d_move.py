@@ -28,3 +28,22 @@ def den_asgmt(posn, gridx, dx):
         density[whole] = 1-frac
         density[whole+1] = frac
     return density
+
+def move_ptcl(efld,data,particle,dt):
+    """
+    Update position and velocity in dataframe at t1 = t0 + dt
+    :param efld: E-field within each cell, in V/m
+    :param data: particle position and velocity at t0
+    :param particle: type of particle, class particle
+    :param dt: time step, in sec
+    """
+    mass = particle.mass*cst.AMU # mass in kg
+    chrg = particle.charge*cst.UNIT_CHARGE # charge in Coloumb
+    for i in range(len(data)):
+        frac, whole = math.modf(data.position.iloc[i])
+        whole = int(whole)
+        ef = efld[whole] # E-filed on i_th particle
+        accel = ef*chrg/mass # acceleration in m/s2
+        data.velocity.iloc[i] += accel*dt
+        data.position.iloc[i] += data.velocity.iloc[i]*dt
+    return data
