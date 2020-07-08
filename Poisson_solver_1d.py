@@ -39,13 +39,15 @@ def Poisson_solver_1d(ncellx,width,den_chrg,bc):
         A[i-1,i] = -1.0
         A[  i,i] =  2.0
         A[i+1,i] = -1.0
+    
     invA = np.linalg.inv(A)
     invA_den_chrg = np.matmul(invA,den_chrg)*dx*dx
     a = (bc[-1] - bc[0]+invA_den_chrg[-1]-invA_den_chrg[0])/width
     b = bc[0] + invA_den_chrg[0] - a*gridx[0]
-    b1 = bc[-1] + invA_den_chrg[-1] - a*gridx[-1]
+    
     pot = -invA_den_chrg + a*gridx + b
-    return pot
+    efld = [(pot[i+1]-pot[i])/dx for i in range(ncellx)]
+    return pot, efld
 
 # plot diagnostics
 # validated with function below

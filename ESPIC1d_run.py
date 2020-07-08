@@ -2,11 +2,15 @@
 # This ES-PIC_run.py runs the PIC simulation
 # All in SI unit
 
+# modules from *.py in the same folder
 import Constants as cst
-import numpy as np
 import ESPIC1d_init as init
 import ESPIC1d_move as move
 import Particle as ptcl
+import Poisson_solver_1d as ps1d
+
+# python built-in modules
+import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -49,17 +53,28 @@ den_Eon = move.den_asgmt(data_Eon['position'],gridx,dx)*den_per_ptcl
 den_Arp = move.den_asgmt(data_Arp['position'],gridx,dx)*den_per_ptcl
 den_chrg = ptcl.Eon.charge*den_Eon + ptcl.Arp.charge*den_Arp
 
-
+# update potential according to assigned charges to nodes
+pot, efld = ps1d.Poisson_solver_1d(ncellx,width,den_chrg,(pot_l,pot_r))
 
 # diagnostic plot
-fig, (ax0,ax1) = plt.subplots(2,1, figsize=(8,4))
+fig, (ax0,ax1,ax2) = plt.subplots(1,3, figsize=(9,3),
+      constrained_layout=True)
+ax0.plot(gridx,den_chrg)
+ax0.set_title('charge distribution')
+ax1.plot(gridx,pot)
+ax1.set_title('potential distribution')
+ax2.plot(gridx[1:],efld)
+ax2.set_title('E-field distribution')
+plt.show()
+
+#fig, (ax0,ax1) = plt.subplots(2,1, figsize=(8,4))
 #data_Eon.plot(x='position',y='index',ax=ax0,kind='scatter',xlim=(0.0,width),
 #              c='blue')
 #data_Arp.plot(x='position',y='index',ax=ax0,kind='scatter',xlim=(0.0,width),
 #              c='red')
-data_Eon.plot.hist(y='position',bins=ncellx,ax=ax0)
-data_Arp.plot.hist(y='position',bins=ncellx,ax=ax0)
-ax1.plot(gridx,den_Eon,'b-')
-ax1.plot(gridx,den_Arp,'r-')
-ax1.plot(gridx,den_chrg,'k-')
-plt.show()
+#data_Eon.plot.hist(y='position',bins=ncellx,ax=ax0)
+#data_Arp.plot.hist(y='position',bins=ncellx,ax=ax0)
+#ax1.plot(gridx,den_Eon,'b-')
+#ax1.plot(gridx,den_Arp,'r-')
+#ax1.plot(gridx,den_chrg,'k-')
+#plt.show()
