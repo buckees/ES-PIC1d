@@ -12,7 +12,6 @@ import Poisson_solver_1d as ps1d
 # python built-in modules
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
 
 # Geometry and Mesh
 width = 0.01 # lenght of domain, in meter
@@ -113,7 +112,7 @@ for i in range(num_iter):
         ax[1,2].plot(posn_Arp,vels_Arp,'ro')
         ax[1,2].set_title('remaining particles = %d' % num_ptcl)
 #        fig.canvas.draw()
-        fig.savefig('ITER_{:03}.png'.format(i))
+        fig.savefig('/Figures/ITER_{:05}.png'.format(i))
 #        plt.pause(0.1)
 
 fig.savefig('ES-PIC1d.png')

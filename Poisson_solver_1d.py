@@ -46,9 +46,9 @@ def Poisson_solver_1d(ncellx,width,den_chrg,bc):
     a = (bc[-1] - bc[0]+invA_den_chrg[-1]-invA_den_chrg[0])/width
     b = bc[0] + invA_den_chrg[0] - a*gridx[0]
     
-    pot = -invA_den_chrg + a*gridx + b
+    pot = invA_den_chrg - a*gridx - b
     pot = savgol_filter(pot, 7, 2) # window size 10, polynomial order 3
-    efld = [(pot[i+1]-pot[i])/dx for i in range(ncellx)]
+    efld = [-(pot[i+1]-pot[i])/dx for i in range(ncellx)]
     return pot, efld
 
 # plot diagnostics
@@ -56,24 +56,23 @@ def Poisson_solver_1d(ncellx,width,den_chrg,bc):
 #phi_f = @(t) t.*cos(t); % inline function for the exact solution
 #rho_f = @(t) 2.*sin(t) + t.*cos(t); % inline function for the exact right-hand-side
 #
-#width = 6.28
-#ncellx = 100
-##den_chrg = np.zeros((ncellx+1,),dtype=np.float)
-#gridx, dx = np.linspace(0.0,width,ncellx+1,retstep=True)
+width = 6.28
+ncellx = 100
+den_chrg = np.ones((ncellx+1,),dtype=np.float)
+gridx, dx = np.linspace(0.0,width,ncellx+1,retstep=True)
 ##den_chrg = (1-np.power(gridx,2))*1e11
 #den_chrg = np.sin(gridx) + np.multiply(gridx,np.cos(gridx))
 #den_chrg = -den_chrg
-#
-#pot = Poisson_solver_1d(ncellx,width,den_chrg,(0.0,6.28))
-#efld = [(pot[i+1]-pot[i])/dx for i in range(ncellx)]
-## diagnostic plot
-#fig, (ax0,ax1,ax2) = plt.subplots(1,3, figsize=(9,3),
-#      constrained_layout=True)
-#ax0.plot(gridx,den_chrg)
-#ax0.set_title('charge distribution')
-#ax1.plot(gridx,pot)
-#ax1.set_title('potential distribution')
-#ax2.plot(gridx[1:],efld)
-#ax2.set_title('E-field distribution')
-#plt.show()
-#print(pot[0],pot[-1])
+
+pot, efld = Poisson_solver_1d(ncellx,width,den_chrg,(0.0,6.28))
+# diagnostic plot
+fig, (ax0,ax1,ax2) = plt.subplots(1,3, figsize=(9,3),
+      constrained_layout=True)
+ax0.plot(gridx,den_chrg)
+ax0.set_title('charge distribution')
+ax1.plot(gridx,pot)
+ax1.set_title('potential distribution')
+ax2.plot(gridx[1:],efld)
+ax2.set_title('E-field distribution')
+plt.show()
+print(pot[0],pot[-1])
