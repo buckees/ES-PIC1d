@@ -4,6 +4,7 @@
 import Constants as cst
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.signal import savgol_filter
 
 def Poisson_solver_1d(ncellx,width,den_chrg,bc):
     """
@@ -46,6 +47,7 @@ def Poisson_solver_1d(ncellx,width,den_chrg,bc):
     b = bc[0] + invA_den_chrg[0] - a*gridx[0]
     
     pot = -invA_den_chrg + a*gridx + b
+    pot = savgol_filter(pot, 7, 2) # window size 10, polynomial order 3
     efld = [(pot[i+1]-pot[i])/dx for i in range(ncellx)]
     return pot, efld
 

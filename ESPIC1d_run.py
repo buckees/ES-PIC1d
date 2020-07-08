@@ -31,14 +31,14 @@ den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density
 
 # Model Parameters
 num_ptcl = 100000 # number of particles, should be >> ncellx to reduce noise
-dt = 1.0e-11 # in sec
-num_iter = 10001 # number of iterations
+dt = 1.0e-12 # in sec
 
 den_per_ptcl = nEon_init/num_ptcl # density contained in one particle
 
 # initialize the position and velcotiy in a dataframe
 posn_Eon, vels_Eon = init.init_data(num_ptcl,ptcl.Eon.temp,ptcl.Eon.mass,width)
 posn_Arp, vels_Arp = init.init_data(num_ptcl,ptcl.Arp.temp,ptcl.Arp.mass,width)
+posn_Arp = posn_Eon.copy()
 
 # create mesh
 gridx, cell_center, dx = init.init_mesh(ncellx,width)
@@ -74,14 +74,15 @@ ax[0,2].plot(posn_Arp,vels_Arp,'ro')
 ax[1,0].hist(posn_Eon,bins=20,histtype='step',color='blue')
 ax[1,0].hist(posn_Arp,bins=20,histtype='step',color='red')
 ax[1,1].plot(gridx,pot,'k-')
-ax[1,1].set_title('iter = %d' % i)
+ax[1,1].set_title('iter = 0')
 ax_temp1 = ax[1,1].twinx()
 ax_temp1.plot(cell_center,efld,'g-')
 ax[1,2].plot(posn_Eon,vels_Eon,'bo')
 ax[1,2].plot(posn_Arp,vels_Arp,'ro')
 ax[1,2].set_title('remaining particles = %d' % num_ptcl)
 
-nout_iter = 100
+num_iter = 10001 # number of iterations
+nout_iter = 500
 for i in range(num_iter):
     # assign charge densities to grid nodes, unit in UNIT_CHARGE
     den_Eon = move.den_asgmt(posn_Eon,gridx,dx)*den_per_ptcl
@@ -94,6 +95,7 @@ for i in range(num_iter):
     posn_Eon, vels_Eon = move.move_ptcl(ptcl.Eon,posn_Eon,vels_Eon,efld,dt,width)
     posn_Arp, vels_Arp = move.move_ptcl(ptcl.Arp,posn_Arp,vels_Arp,efld,dt,width)
     num_ptcl = len(posn_Eon)
+    if i % 10 == 0: print('iter = %d' % i)
     if i % nout_iter == 0:
         # plot animation    
         for item in ax[1,:]:
@@ -110,8 +112,9 @@ for i in range(num_iter):
         ax[1,2].plot(posn_Eon,vels_Eon,'bo')
         ax[1,2].plot(posn_Arp,vels_Arp,'ro')
         ax[1,2].set_title('remaining particles = %d' % num_ptcl)
-        fig.canvas.draw()
-        plt.pause(0.1)
+#        fig.canvas.draw()
+        fig.savefig('ITER_{:03}.png'.format(i))
+#        plt.pause(0.1)
 
 fig.savefig('ES-PIC1d.png')
 #plt.show()
