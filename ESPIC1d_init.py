@@ -5,7 +5,7 @@ import Constants as cst
 import Particle as ptcl
 from scipy.stats import norm
 import numpy as np
-import pandas as pd
+#import pandas as pd
 
 def thermal_velocity(charge, temperature, mass):
     """
@@ -64,9 +64,9 @@ def init_data(num_ptcl=10,temperature=0.025,mass=cst.AMU,width=0.01):
     """
     posn = init_posn(num_ptcl,width) # initial position
     vels = norm_distribution(num_ptcl,temperature,mass)
-    data = pd.DataFrame(np.vstack((posn, vels)).T,
-                        columns=['position','velocity'])
-    return data.reset_index()
+#    data = pd.DataFrame(np.vstack((posn, vels)).T,
+#                        columns=['position','velocity'])
+    return posn, vels
 
 def init_mesh(ncellx=10,width=0.01):
     """
