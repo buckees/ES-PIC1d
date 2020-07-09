@@ -61,8 +61,8 @@ pot, efld = ps1d.Poisson_solver_1d(init.Mesh,den_chrg,bc)
 posn_Eon, vels_Eon = move.move_ptcl(ptcl.Eon,posn_Eon,vels_Eon,efld,dt,init.Mesh)
 posn_Arp, vels_Arp = move.move_ptcl(ptcl.Arp,posn_Arp,vels_Arp,efld,dt,init.Mesh)
 
-num_iter = 1001 # number of iterations
-nout_iter = 100
+num_iter = 10001 # number of iterations
+nout_iter = 1000
 for i in range(num_iter):
     # assign charge densities to grid nodes, unit in UNIT_CHARGE
     den_Eon = move.den_asgmt(posn_Eon,init.Mesh)

@@ -24,8 +24,8 @@ def den_asgmt(posn, mesh):
     for i, p in enumerate(posn):
         frac, whole = math.modf(p/mesh.dx)
         whole = int(whole)
-        density[whole] = 1-frac
-        density[whole+1] = frac
+        density[whole] += 1-frac
+        density[whole+1] += frac
     return density
 
 def move_ptcl(particle,posn,vels,efld,dt,mesh):
