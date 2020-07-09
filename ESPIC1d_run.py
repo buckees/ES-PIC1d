@@ -2,6 +2,10 @@
 # This ES-PIC_run.py runs the PIC simulation
 # All in SI unit
 
+import time
+start_time = time.time()
+
+
 # modules from *.py in the same folder
 import Constants as cst
 import ESPIC1d_init as init
@@ -61,8 +65,8 @@ pot, efld = ps1d.Poisson_solver_1d(init.Mesh,den_chrg,bc)
 posn_Eon, vels_Eon = move.move_ptcl(ptcl.Eon,posn_Eon,vels_Eon,efld,dt,init.Mesh)
 posn_Arp, vels_Arp = move.move_ptcl(ptcl.Arp,posn_Arp,vels_Arp,efld,dt,init.Mesh)
 
-num_iter = 10001 # number of iterations
-nout_iter = 1000
+num_iter = 30001 # number of iterations
+nout_iter = 2000
 for i in range(num_iter):
     # assign charge densities to grid nodes, unit in UNIT_CHARGE
     den_Eon = move.den_asgmt(posn_Eon,init.Mesh)
@@ -84,26 +88,4 @@ for i in range(num_iter):
         out.plot_diag(init.Mesh,posn_Eon, vels_Eon, posn_Arp, vels_Arp,
                       den_chrg, pot, efld, i)
 
-#plt.show()
-# diagnostic plot
-#fig, (ax0,ax1,ax2) = plt.subplots(1,3, figsize=(9,3),
-#      constrained_layout=True)
-#ax0.plot(gridx,den_chrg)
-#ax0.set_title('charge distribution')
-#ax1.plot(gridx,pot)
-#ax1.set_title('potential distribution')
-#ax2.plot(gridx[1:],efld)
-#ax2.set_title('E-field distribution')
-#plt.show()
-
-#fig, (ax0,ax1) = plt.subplots(2,1, figsize=(8,4))
-#data_Eon.plot(x='position',y='index',ax=ax0,kind='scatter',xlim=(0.0,width),
-#              c='blue')
-#data_Arp.plot(x='position',y='index',ax=ax0,kind='scatter',xlim=(0.0,width),
-#              c='red')
-#data_Eon.plot.hist(y='position',bins=ncellx,ax=ax0)
-#data_Arp.plot.hist(y='position',bins=ncellx,ax=ax0)
-#ax1.plot(gridx,den_Eon,'b-')
-#ax1.plot(gridx,den_Arp,'r-')
-#ax1.plot(gridx,den_chrg,'k-')
-#plt.show()
+print("--- %d seconds ---" % (time.time() - start_time))
