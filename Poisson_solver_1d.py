@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
 
-def Poisson_solver_1d(ncellx,width,den_chrg,bc):
+def Poisson_solver_1d(mesh,den_chrg,bc):
     """
     Solve 1d Poisson's equation, return potential
     Using finite diferences, inverse the matrix
@@ -29,26 +29,24 @@ def Poisson_solver_1d(ncellx,width,den_chrg,bc):
     :param dx: cell size, in meter
     :param bc=(bc_l,bc_r): a 2-tuple, boundary conditions
     """
-    # construct grids
-    gridx, dx = np.linspace(0.0,width,ncellx+1,retstep=True)
     den_chrg = den_chrg*cst.UNIT_CHARGE/cst.EPS0
     # construct A
-    A = np.zeros((ncellx+1,ncellx+1),dtype=np.float)
+    A = np.zeros((mesh.ncellx+1,mesh.ncellx+1),dtype=np.float)
     A[0,0]       =  2.0; A[1,0]       = -1.0;
-    A[-2,ncellx] = -1.0; A[-1,ncellx] =  2.0;
-    for i in range(1,ncellx):
+    A[-2,mesh.ncellx] = -1.0; A[-1,mesh.ncellx] =  2.0;
+    for i in range(1,mesh.ncellx):
         A[i-1,i] = -1.0
         A[  i,i] =  2.0
         A[i+1,i] = -1.0
     
     invA = np.linalg.inv(A)
-    invA_den_chrg = np.matmul(invA,den_chrg)*dx*dx
-    a = (bc[-1] - bc[0]+invA_den_chrg[-1]-invA_den_chrg[0])/width
-    b = bc[0] + invA_den_chrg[0] - a*gridx[0]
+    invA_den_chrg = np.matmul(invA,den_chrg)*mesh.dx*mesh.dx
+    a = (bc[-1] - bc[0]+invA_den_chrg[-1]-invA_den_chrg[0])/mesh.width
+    b = bc[0] + invA_den_chrg[0] - a*mesh.gridx[0]
     
-    pot = invA_den_chrg + a*gridx + b
+    pot = invA_den_chrg + a*mesh.gridx + b
     pot = savgol_filter(pot, 7, 2) # window size 10, polynomial order 3
-    efld = [-(pot[i+1]-pot[i])/dx for i in range(ncellx)]
+    efld = -(pot[1:] - pot[0:-1])/mesh.dx
     return pot, efld
 
 # plot diagnostics

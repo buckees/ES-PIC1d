@@ -14,8 +14,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Geometry and Mesh
-width = 0.01 # lenght of domain, in meter
-ncellx = 1000 # number of cells in x direction
+init.Mesh.ncellx = 100 # number of cells in x direction
+init.Mesh.width = 0.01 # lenght of domain, in meter
+# init.Mesh contains all mesh information
+init.Mesh.gridx, init.Mesh.dx = np.linspace(0.0, init.Mesh.width,
+                                            init.Mesh.ncellx+1, retstep=True)
+init.Mesh.cell_cnt = (init.Mesh.gridx[0:-1] + init.Mesh.gridx[1:])/2.0
 
 # Operation Conditions
 press_mT = 100.0 # pressure, in mTorr
@@ -23,38 +27,38 @@ pressure = press_mT/1.0e3*cst.TORR2PA # in Pa, 1 Torr = 133.322 Pa
 nAr_init = pressure/(cst.KB*ptcl.Ar.temp*cst.EV2K) # in m-3, N/V = P/(kb*T) ideal gas law
 ptcl.Eon.temp = 2.0 # in eV
 ptcl.Arp.temp = 0.1 # in eV
-pot_l = 100.0 # in V, left boundary potential
-pot_r = 0.0 # in V, right boundary potential
+bc = (0.0, 0.0) # left and right boundary conditions, in Volt 
 nEon_init = 1.0e14 # in m-3, initial electron density
 den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density 
 
 # Model Parameters
-num_ptcl = 100000 # number of particles, should be >> ncellx to reduce noise
+num_ptcl = 10000 # number of particles, should be >> ncellx to reduce noise
 dt = 1.0e-12 # in sec
 
 den_per_ptcl = nEon_init/num_ptcl # density contained in one particle
 
 # initialize the position and velcotiy in a dataframe
-posn_Eon, vels_Eon = init.init_data(num_ptcl,ptcl.Eon.temp,ptcl.Eon.mass,width)
-posn_Arp, vels_Arp = init.init_data(num_ptcl,ptcl.Arp.temp,ptcl.Arp.mass,width)
+posn_Eon, vels_Eon = init.init_data(num_ptcl,ptcl.Eon) #posn in unit length
+posn_Arp, vels_Arp = init.init_data(num_ptcl,ptcl.Arp)
+posn_Eon = posn_Eon*init.Mesh.width
 posn_Arp = posn_Eon.copy()
 
 # create mesh
-gridx, cell_center, dx = init.init_mesh(ncellx,width)
+#gridx, cell_center, dx = init.init_mesh(ncellx,width)
 
 # initilize potential on cell boudaries
-pot, efld = init.init_pot(ncellx,dx,pot_l,pot_r)
+pot, efld = init.init_pot(init.Mesh,bc)
 
 # assign charge densities to grid nodes, unit in UNIT_CHARGE
-den_Eon = move.den_asgmt(posn_Eon,gridx,dx)*den_per_ptcl
-den_Arp = move.den_asgmt(posn_Arp,gridx,dx)*den_per_ptcl
-den_chrg = ptcl.Eon.charge*den_Eon + ptcl.Arp.charge*den_Arp
+den_Eon = move.den_asgmt(posn_Eon,init.Mesh)
+den_Arp = move.den_asgmt(posn_Arp,init.Mesh)
+den_chrg = (ptcl.Eon.charge*den_Eon + ptcl.Arp.charge*den_Arp)*den_per_ptcl
 
 # update potential according to assigned charges to nodes
-pot, efld = ps1d.Poisson_solver_1d(ncellx,width,den_chrg,(pot_l,pot_r))
+pot, efld = ps1d.Poisson_solver_1d(init.Mesh,den_chrg,bc)
 # move particles
-posn_Eon, vels_Eon = move.move_ptcl(ptcl.Eon,posn_Eon,vels_Eon,efld,dt,width)
-posn_Arp, vels_Arp = move.move_ptcl(ptcl.Arp,posn_Arp,vels_Arp,efld,dt,width)
+posn_Eon, vels_Eon = move.move_ptcl(ptcl.Eon,posn_Eon,vels_Eon,efld,dt,init.Mesh)
+posn_Arp, vels_Arp = move.move_ptcl(ptcl.Arp,posn_Arp,vels_Arp,efld,dt,init.Mesh)
 
 fig, ax = plt.subplots(2,3, figsize=(15,6),
       constrained_layout=True)
@@ -62,37 +66,41 @@ fig, ax = plt.subplots(2,3, figsize=(15,6),
 #ax[0,0].plot(gridx,den_Arp,'r-')
 ax[0,0].hist(posn_Eon,bins=20,histtype='step',color='blue')
 ax[0,0].hist(posn_Arp,bins=20,histtype='step',color='red')
-ax[0,1].plot(gridx,pot,'k-')
+ax[0,1].plot(init.Mesh.gridx,pot,'k-')
 ax_temp0 = ax[0,1].twinx()
-ax_temp0.plot(cell_center,efld,'g-')
+ax_temp0.plot(init.Mesh.cell_cnt,efld,'g-')
 ax[0,2].plot(posn_Eon,vels_Eon,'bo')
 ax[0,2].plot(posn_Arp,vels_Arp,'ro')
+fig.canvas.draw()
 #
 #ax[1,0].plot(gridx,den_Eon,'b-')
 #ax[1,0].plot(gridx,den_Arp,'r-')
 ax[1,0].hist(posn_Eon,bins=20,histtype='step',color='blue')
 ax[1,0].hist(posn_Arp,bins=20,histtype='step',color='red')
-ax[1,1].plot(gridx,pot,'k-')
+ax[1,1].plot(init.Mesh.gridx,pot,'k-')
 ax[1,1].set_title('iter = 0')
 ax_temp1 = ax[1,1].twinx()
-ax_temp1.plot(cell_center,efld,'g-')
+ax_temp1.plot(init.Mesh.cell_cnt,efld,'g-')
 ax[1,2].plot(posn_Eon,vels_Eon,'bo')
 ax[1,2].plot(posn_Arp,vels_Arp,'ro')
 ax[1,2].set_title('remaining particles = %d' % num_ptcl)
 
-num_iter = 11 # number of iterations
-nout_iter = 2
+num_iter = 101 # number of iterations
+nout_iter = 10
 for i in range(num_iter):
     # assign charge densities to grid nodes, unit in UNIT_CHARGE
-    den_Eon = move.den_asgmt(posn_Eon,gridx,dx)*den_per_ptcl
-    den_Arp = move.den_asgmt(posn_Arp,gridx,dx)*den_per_ptcl
-    den_chrg = ptcl.Eon.charge*den_Eon + ptcl.Arp.charge*den_Arp
+    den_Eon = move.den_asgmt(posn_Eon,init.Mesh)
+    den_Arp = move.den_asgmt(posn_Arp,init.Mesh)
+    den_chrg = (ptcl.Eon.charge*den_Eon + 
+                ptcl.Arp.charge*den_Arp)*den_per_ptcl
     
     # update potential according to assigned charges to nodes
-    pot, efld = ps1d.Poisson_solver_1d(ncellx,width,den_chrg,(pot_l,pot_r))
+    pot, efld = ps1d.Poisson_solver_1d(init.Mesh,den_chrg,bc)
     # move particles
-    posn_Eon, vels_Eon = move.move_ptcl(ptcl.Eon,posn_Eon,vels_Eon,efld,dt,width)
-    posn_Arp, vels_Arp = move.move_ptcl(ptcl.Arp,posn_Arp,vels_Arp,efld,dt,width)
+    posn_Eon, vels_Eon = move.move_ptcl(ptcl.Eon,posn_Eon,vels_Eon,
+                                        efld,dt,init.Mesh)
+    posn_Arp, vels_Arp = move.move_ptcl(ptcl.Arp,posn_Arp,vels_Arp,
+                                        efld,dt,init.Mesh)
     num_ptcl = len(posn_Eon)
     if i % 50 == 0: print('iter = %d' % i)
     if i % nout_iter == 0:
@@ -104,10 +112,10 @@ for i in range(num_iter):
 #        ax[1,0].plot(gridx,den_Arp,'r-')
         ax[1,0].hist(posn_Eon,bins=20,histtype='step',color='blue')
         ax[1,0].hist(posn_Arp,bins=20,histtype='step',color='red')
-        ax[1,1].plot(gridx,pot,'k-')
+        ax[1,1].plot(init.Mesh.gridx,pot,'k-')
         ax[1,1].set_title('iter = %d' % i)
         ax_temp1 = ax[1,1].twinx()
-        ax_temp1.plot(cell_center,efld,'g-')
+        ax_temp1.plot(init.Mesh.cell_cnt,efld,'g-')
         ax[1,2].plot(posn_Eon,vels_Eon,'bo')
         ax[1,2].plot(posn_Arp,vels_Arp,'ro')
         ax[1,2].set_title('remaining particles = %d' % num_ptcl)

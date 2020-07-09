@@ -2,10 +2,23 @@
 # This ES-PIC1d_init.py initialize the PIC simulation
 
 import Constants as cst
-import Particle as ptcl
 from scipy.stats import norm
 import numpy as np
 #import pandas as pd
+
+class Mesh(object):
+    """Stores all particles"""
+    def __init__(self, ncellx, width, dx, gridx, cell_cnt):
+        self.ncellx = ncellx # number of cells in x direction
+        self.width = width # domain size in 1d, in meter
+        self.dx = dx # cell size, in meter
+        self.gridx = gridx # an array of grids in x direction, in meter
+        self.cell_cnt = cell_cnt # an array of cell center in x direction, in meter
+
+# default Mesh
+gridx = np.linspace(0.0,1.0,101)
+cell_cnt = (gridx[0:-1] + gridx[1:])/2.0
+Mesh = Mesh(100,1.0,0.01,gridx,cell_cnt)
 
 def thermal_velocity(charge, temperature, mass):
     """
@@ -46,15 +59,15 @@ def debye_length(eps0, eon_temp, ne):
     """
     return np.sqrt(eps0*cst.EPS0*eon_temp/ne/cst.UNIT_CHARGE)
 
-def init_posn(num_ptcl=10,width=0.01):
+def init_posn(num_ptcl=10):
     """
     Return the random initial positions
     :param num_ptcl: number of particles
     :param ptcl_type: the type of particles, must be pre-defined in Particle.py
     """
-    return np.random.uniform(low=0.001, high=0.999, size=(num_ptcl,))*width
+    return np.random.uniform(low=0.001, high=0.999, size=(num_ptcl,))
 
-def init_data(num_ptcl=10,temperature=0.025,mass=cst.AMU,width=0.01):
+def init_data(num_ptcl,particle):
     """
     return a DataFrame containing the particle positon and velocity
     :param num_ptcl: number of particles
@@ -62,8 +75,8 @@ def init_data(num_ptcl=10,temperature=0.025,mass=cst.AMU,width=0.01):
     :param mass: particle mass
     :param width: the width of domain/geometry
     """
-    posn = init_posn(num_ptcl,width) # initial position
-    vels = norm_distribution(num_ptcl,temperature,mass)
+    posn = init_posn(num_ptcl) # initial position
+    vels = norm_distribution(num_ptcl,particle.temp,particle.mass)
 #    data = pd.DataFrame(np.vstack((posn, vels)).T,
 #                        columns=['position','velocity'])
     return posn, vels
@@ -78,7 +91,7 @@ def init_mesh(ncellx=10,width=0.01):
     cell_center = [np.mean(gridx[i:i+2]) for i in range(ncellx)]
     return gridx, cell_center, dx
 
-def init_pot(ncellx=10,dx=0.01,pot_l=100.0,pot_r=0.0):
+def init_pot(mesh,bc):
     """
     return initial potential and E-field
     :param ncellx: number of cells in x direction
@@ -86,8 +99,8 @@ def init_pot(ncellx=10,dx=0.01,pot_l=100.0,pot_r=0.0):
     :param pot_l: the potential at left boundary
     :param pot_r: the potential at right boundary
     """
-    pot = np.linspace(pot_l,pot_r,ncellx+1)
-    efld = [(pot[i+1]-pot[i])/dx for i in range(ncellx)]
+    pot = np.linspace(bc[0],bc[-1],mesh.ncellx+1)
+    efld = -(pot[1:] - pot[0:-1])/mesh.dx
     return pot, efld
 
 
