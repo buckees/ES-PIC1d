@@ -3,7 +3,7 @@
 # All in SI unit
 
 import time
-start_time = time.time()
+t0 = time.time()
 
 
 # modules from *.py in the same folder
@@ -65,8 +65,8 @@ pot, efld = ps1d.Poisson_solver_1d(init.Mesh,den_chrg,bc)
 posn_Eon, vels_Eon = move.move_ptcl(ptcl.Eon,posn_Eon,vels_Eon,efld,dt,init.Mesh)
 posn_Arp, vels_Arp = move.move_ptcl(ptcl.Arp,posn_Arp,vels_Arp,efld,dt,init.Mesh)
 
-num_iter = 30001 # number of iterations
-nout_iter = 2000
+num_iter = 301 # number of iterations
+nout_iter = 20
 for i in range(num_iter):
     # assign charge densities to grid nodes, unit in UNIT_CHARGE
     den_Eon = move.den_asgmt(posn_Eon,init.Mesh)
@@ -88,4 +88,6 @@ for i in range(num_iter):
         out.plot_diag(init.Mesh,posn_Eon, vels_Eon, posn_Arp, vels_Arp,
                       den_chrg, pot, efld, i)
 
-print("--- %d seconds ---" % (time.time() - start_time))
+
+from datetime import timedelta
+print("-total time %s -" % str(timedelta(seconds=(int(time.time() - t0)))))
