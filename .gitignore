@@ -123,3 +123,14 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+*.png
+*.png
+Figures/ITER_00000000.png
+Figures/ITER_00000100.png
+Figures/ITER_00000200.png
+Figures/ITER_00000300.png
+*.png
+Figures/ITER_00000000.png
+Figures/ITER_00000100.png
+Figures/ITER_00000200.png
+Figures/ITER_00000300.png
