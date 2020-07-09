@@ -5,7 +5,7 @@ import Constants as cst
 
 class Particle(object):
     """Stores all particles"""
-    def __init__(self, name,type, mass, charge,temp):
+    def __init__(self, name, type, mass, charge, temp):
         self.name = name # str
         self.type = type # str, 'E','Ion','Neut' or 'Bkg'
         self.mass = mass # unit in kg

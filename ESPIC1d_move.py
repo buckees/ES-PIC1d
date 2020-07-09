@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import math
 
-def den_asgmt(posn, gridx, dx):
+def den_asgmt(posn, mesh):
     """
     Return the density distribution on grids
     Assign the density to each grid/node based on 
@@ -20,16 +20,15 @@ def den_asgmt(posn, gridx, dx):
     :param gridx: grid/cell_boundary coordinate in x direction
     :param den_per_ptcl: density contained in a particle
     """
-    density = np.full((len(gridx),),1.0e-5)
+    density = np.full((mesh.ncellx+1,),1.0e-5)
     for i, p in enumerate(posn):
-        p = p/dx
-        frac, whole = math.modf(p)
+        frac, whole = math.modf(p/mesh.dx)
         whole = int(whole)
-        density[whole] = 1-frac
-        density[whole+1] = frac
+        density[whole] += 1-frac
+        density[whole+1] += frac
     return density
 
-def move_ptcl(particle,posn,vels,efld,dt,width):
+def move_ptcl(particle,posn,vels,efld,dt,mesh):
     """
     Update position and velocity in dataframe at t1 = t0 + dt
     :param efld: E-field within each cell, in V/m
@@ -42,17 +41,16 @@ def move_ptcl(particle,posn,vels,efld,dt,width):
     chrg = particle.charge*cst.UNIT_CHARGE # charge in Coloumb
     posn_new, vels_new = [], []
     for p, v in zip(posn,vels):
-        frac, whole = math.modf(p)
+        frac, whole = math.modf(p/mesh.dx)
         whole = int(whole)
         ef = efld[whole] # E-filed on i_th particle
         accel = ef*chrg/mass # acceleration in m/s2
         p += v*dt; posn_new.append(p)
         v += accel*dt; vels_new.append(v)
-    
-    posn_new, vels_new = check_bdry(posn_new,vels_new,width)
+    posn_new, vels_new = check_bdry(posn_new,vels_new,mesh)
     return posn_new, vels_new
 
-def check_bdry(posn,vels,width):
+def check_bdry(posn,vels,mesh):
     """
     Remove particles which go beyond the domain, (p < 0.0  or p > width)
     :param posn: particle positions at t0
@@ -61,7 +59,7 @@ def check_bdry(posn,vels,width):
     """
     index_remove = []
     for i, p in enumerate(posn):
-        if not (0.0 < p < width):
+        if not (0.0 < p < mesh.width):
             index_remove.append(i)
     return np.delete(posn,index_remove), np.delete(vels,index_remove)
     
