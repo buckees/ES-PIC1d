@@ -30,7 +30,7 @@ init.Mesh.cell_cnt = (init.Mesh.gridx[0:-1] + init.Mesh.gridx[1:])/2.0
 press_mT = 100.0 # pressure, in mTorr
 pressure = press_mT/1.0e3*cst.TORR2PA # in Pa, 1 Torr = 133.322 Pa
 nAr_init = pressure/(cst.KB*ptcl.Ar.temp*cst.EV2K) # in m-3, N/V = P/(kb*T) ideal gas law
-ptcl.Eon.temp = 2.0 # in eV
+ptcl.Eon.temp = 1.0 # in eV
 ptcl.Arp.temp = 0.1 # in eV
 bc = (0.0, 0.0) # left and right boundary conditions, in Volt 
 nEon_init = 1.0e15 # in m-3, initial electron density
@@ -65,8 +65,8 @@ pot, efld = ps1d.Poisson_solver_1d(init.Mesh,den_chrg,bc)
 posn_Eon, vels_Eon = move.move_ptcl(ptcl.Eon,posn_Eon,vels_Eon,efld,dt,init.Mesh)
 posn_Arp, vels_Arp = move.move_ptcl(ptcl.Arp,posn_Arp,vels_Arp,efld,dt,init.Mesh)
 
-num_iter = 301 # number of iterations
-nout_iter = 20
+num_iter = 600001 # number of iterations
+nout_iter = 300
 for i in range(num_iter):
     # assign charge densities to grid nodes, unit in UNIT_CHARGE
     den_Eon = move.den_asgmt(posn_Eon,init.Mesh)
@@ -86,7 +86,7 @@ for i in range(num_iter):
         print('iter = %d' % i)
         # plot animation
         out.plot_diag(init.Mesh,posn_Eon, vels_Eon, posn_Arp, vels_Arp,
-                      den_chrg, pot, efld, i)
+                      den_chrg, pot, efld, i, num_ptcl)
 
 
 from datetime import timedelta
