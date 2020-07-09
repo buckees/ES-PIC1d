@@ -3,7 +3,6 @@
 
 import Constants as cst
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
 
 def Poisson_solver_1d(mesh,den_chrg,bc):
@@ -45,7 +44,7 @@ def Poisson_solver_1d(mesh,den_chrg,bc):
     b = bc[0] + invA_den_chrg[0] - a*mesh.gridx[0]
     
     pot = invA_den_chrg + a*mesh.gridx + b
-    pot = savgol_filter(pot, 7, 2) # window size 10, polynomial order 3
+    pot = savgol_filter(pot, 11, 3) # window size 11, polynomial order 3
     efld = -(pot[1:] - pot[0:-1])/mesh.dx
     return pot, efld
 
