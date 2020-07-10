@@ -5,7 +5,7 @@
 import Constants as cst
 import numpy as np
 import math
-from scipy.signal import savgol_filter
+#from scipy.signal import savgol_filter
 
 def den_asgmt(posn, mesh):
     """
@@ -24,7 +24,7 @@ def den_asgmt(posn, mesh):
         whole = int(whole)
         density[whole] += 1-frac
         density[whole+1] += frac
-    density = savgol_filter(density, 11, 3) # window size 11, polynomial order 3
+#    density = savgol_filter(density, 11, 3) # window size 11, polynomial order 3
     return density
 
 def move_ptcl(particle,posn,vels,efld,dt,mesh):

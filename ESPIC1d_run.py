@@ -17,6 +17,7 @@ import Poisson_solver_1d as ps1d
 # python built-in modules
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.signal import savgol_filter
 
 # Geometry and Mesh
 init.Mesh.ncellx = 100 # number of cells in x direction
@@ -37,7 +38,7 @@ nEon_init = 1.0e15 # in m-3, initial electron density
 den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density 
 
 # Model Parameters
-num_ptcl = 10000 # number of particles, should be >> ncellx to reduce noise
+num_ptcl = 100000 # number of particles, should be >> ncellx to reduce noise
 dt = 1.0e-10 # in sec
 
 den_per_ptcl = nEon_init/num_ptcl # density contained in one particle
@@ -58,6 +59,7 @@ pot, efld = init.init_pot(init.Mesh,bc)
 den_Eon = move.den_asgmt(posn_Eon,init.Mesh)
 den_Arp = move.den_asgmt(posn_Arp,init.Mesh)
 den_chrg = (ptcl.Eon.charge*den_Eon + ptcl.Arp.charge*den_Arp)*den_per_ptcl
+den_chrg = savgol_filter(den_chrg, 11, 3) # window size 11, polynomial order 3
 
 # update potential according to assigned charges to nodes
 pot, efld = ps1d.Poisson_solver_1d(init.Mesh,den_chrg,bc)
@@ -73,7 +75,7 @@ for i in range(num_iter):
     den_Arp = move.den_asgmt(posn_Arp,init.Mesh)
     den_chrg = (ptcl.Eon.charge*den_Eon + 
                 ptcl.Arp.charge*den_Arp)*den_per_ptcl
-    
+    den_chrg = savgol_filter(den_chrg, 11, 3) # window size 11, polynomial order 3
     # update potential according to assigned charges to nodes
     pot, efld = ps1d.Poisson_solver_1d(init.Mesh,den_chrg,bc)
     # move particles
