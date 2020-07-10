@@ -35,7 +35,7 @@ den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density
 
 # Operation Parameters
 num_ptcl = 100000 # number of particles, should be >> ncellx to reduce noise
-dt = 1.0e-12 # in sec
+dt = 1.0e-13 # in sec
 
 den_per_ptcl = Eon_den_init/num_ptcl # density contained in one particle
 
@@ -60,8 +60,8 @@ pe = ps1d.Poisson_solver_1d(Mesh, chrg_den, bc, invA) # pe contains [pot, efld]
 Eon_pv = move.move_ptcl(Mesh, Eon, Eon_pv, pe[1], dt)
 Arp_pv = move.move_ptcl(Mesh, Arp, Arp_pv, pe[1], dt)
 
-num_iter = 1501 # number of iterations
-nout_iter = 300
+num_iter = 15001 # number of iterations
+nout_iter = 1000
 for i in range(num_iter):
     # assign charge densities to grid nodes, unit in UNIT_CHARGE
     Eon_den = move.den_asgmt(Eon_pv[0], Mesh)
