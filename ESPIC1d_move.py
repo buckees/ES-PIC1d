@@ -3,11 +3,7 @@
 #
 
 import Constants as cst
-import Particle as ptcl
-from scipy.stats import norm
 import numpy as np
-import pandas as pd
-import math
 
 def den_asgmt(posn, mesh):
     """
@@ -20,37 +16,43 @@ def den_asgmt(posn, mesh):
     :param gridx: grid/cell_boundary coordinate in x direction
     :param den_per_ptcl: density contained in a particle
     """
-    density = np.full((mesh.ncellx+1,),1.0e-5)
-    for i, p in enumerate(posn):
-        frac, whole = math.modf(p/mesh.dx)
-        whole = int(whole)
-        density[whole] += 1-frac
-        density[whole+1] += frac
-    return density
+    frac, whole = np.modf(posn/mesh.dx)
+    whole = whole.astype(int)
+    return make_asgmt(whole, frac, mesh.ncellx)
 
-def move_ptcl(particle,posn,vels,efld,dt,mesh):
+def make_asgmt(whole, frac, ncellx):
+    den = np.full((ncellx+1,),1.0e-5)
+    for w, f in zip(whole, frac):
+        den[w] += 1.0 - f
+        den[w+1] += f
+    return den
+
+def move_ptcl(mesh, sp, pv, efld, dt):
     """
     Update position and velocity in dataframe at t1 = t0 + dt
+    :param mesh: all mesh info
+    :param sp: type of particle, class particle
+    :param pv: sp positions and velocities at t0
     :param efld: E-field within each cell, in V/m
-    :param posn: particle positions at t0
-    :param vels: particle velocities at t0
-    :param particle: type of particle, class particle
     :param dt: time step, in sec
     """
-    mass = particle.mass*cst.AMU # mass in kg
-    chrg = particle.charge*cst.UNIT_CHARGE # charge in Coloumb
-    posn_new, vels_new = [], []
-    for p, v in zip(posn,vels):
-        frac, whole = math.modf(p/mesh.dx)
-        whole = int(whole)
-        ef = efld[whole] # E-filed on i_th particle
-        accel = ef*chrg/mass # acceleration in m/s2
-        p += v*dt; posn_new.append(p)
-        v += accel*dt; vels_new.append(v)
-    posn_new, vels_new = check_bdry(posn_new,vels_new,mesh)
-    return posn_new, vels_new
+    accel = efld*sp.charge/sp.mass*cst.UNIT_CHARGE/cst.AMU
+    frac, whole = np.modf(pv[0]/mesh.dx)
+    whole = whole.astype(int)
+    pv = make_move(pv[0], pv[1], whole, accel, dt, mesh.width)
+    return pv
 
-def check_bdry(posn,vels,mesh):
+def make_move(posn, vels, whole, accel, dt, width):
+    posn_new, vels_new = [], []
+    for p, v, w in zip(posn, vels, whole):
+        p += v*dt; 
+        if (0.001 < p < width*0.999):
+            v += accel[w]*dt; 
+            posn_new.append(p)
+            vels_new.append(v)
+    return [np.asarray(posn_new), np.asarray(vels_new)]
+
+def check_bdry(posn, vels, mesh):
     """
     Remove particles which go beyond the domain, (p < 0.0  or p > width)
     :param posn: particle positions at t0
