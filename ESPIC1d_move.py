@@ -4,8 +4,6 @@
 
 import Constants as cst
 import numpy as np
-import math
-#from scipy.signal import savgol_filter
 
 def den_asgmt(posn, mesh):
     """
@@ -18,14 +16,13 @@ def den_asgmt(posn, mesh):
     :param gridx: grid/cell_boundary coordinate in x direction
     :param den_per_ptcl: density contained in a particle
     """
-    density = np.full((mesh.ncellx+1,),1.0e-5)
-    for i, p in enumerate(posn):
-        frac, whole = math.modf(p/mesh.dx)
-        whole = int(whole)
-        density[whole] += 1-frac
-        density[whole+1] += frac
-#    density = savgol_filter(density, 11, 3) # window size 11, polynomial order 3
-    return density
+    den = np.full((mesh.ncellx+1,),1.0e-5)
+    frac, whole = np.modf(posn/mesh.dx)
+    whole = whole.astype(int)
+    for w, f in zip(whole, frac):
+        den[w] += 1 - f
+        den[w+1] += f
+    return den
 
 def move_ptcl(particle,posn,vels,efld,dt,mesh):
     """
@@ -39,17 +36,17 @@ def move_ptcl(particle,posn,vels,efld,dt,mesh):
     mass = particle.mass*cst.AMU # mass in kg
     chrg = particle.charge*cst.UNIT_CHARGE # charge in Coloumb
     posn_new, vels_new = [], []
-    for p, v in zip(posn,vels):
-        frac, whole = math.modf(p/mesh.dx)
-        whole = int(whole)
-        ef = efld[whole] # E-filed on i_th particle
+    frac, whole = np.modf(posn/mesh.dx)
+    whole = whole.astype(int)
+    for p, v, w in zip(posn, vels, whole):
+        ef = efld[w] # E-filed on i_th particle
         accel = ef*chrg/mass # acceleration in m/s2
         p += v*dt; posn_new.append(p)
         v += accel*dt; vels_new.append(v)
     posn_new, vels_new = check_bdry(posn_new,vels_new,mesh)
     return posn_new, vels_new
 
-def check_bdry(posn,vels,mesh):
+def check_bdry(posn, vels, mesh):
     """
     Remove particles which go beyond the domain, (p < 0.0  or p > width)
     :param posn: particle positions at t0

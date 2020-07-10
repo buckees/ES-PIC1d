@@ -37,7 +37,7 @@ nEon_init = 1.0e15 # in m-3, initial electron density
 den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density 
 
 # Model Parameters
-num_ptcl = 100000 # number of particles, should be >> ncellx to reduce noise
+num_ptcl = 10000 # number of particles, should be >> ncellx to reduce noise
 dt = 1.0e-10 # in sec
 
 den_per_ptcl = nEon_init/num_ptcl # density contained in one particle
@@ -66,7 +66,7 @@ pot, efld = ps1d.Poisson_solver_1d(init.Mesh,den_chrg,bc)
 posn_Eon, vels_Eon = move.move_ptcl(ptcl.Eon,posn_Eon,vels_Eon,efld,dt,init.Mesh)
 posn_Arp, vels_Arp = move.move_ptcl(ptcl.Arp,posn_Arp,vels_Arp,efld,dt,init.Mesh)
 
-num_iter = 120001 # number of iterations
+num_iter = 901 # number of iterations
 nout_iter = 300
 for i in range(num_iter):
     # assign charge densities to grid nodes, unit in UNIT_CHARGE
@@ -84,7 +84,8 @@ for i in range(num_iter):
                                         efld,dt,init.Mesh)
     num_ptcl = len(posn_Eon)
     if i % nout_iter == 0:
-        print('iter = %d' % i)
+        print('iter = %d' % i, 
+              "- time %s -" % str(timedelta(seconds=(int(time.time() - t0)))))
         # plot animation
         out.plot_diag(init.Mesh,posn_Eon, vels_Eon, posn_Arp, vels_Arp,
                       den_chrg, pot, efld, i, num_ptcl)
