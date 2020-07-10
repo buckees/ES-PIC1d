@@ -59,31 +59,4 @@ def Poisson_solver_1d(mesh,den_chrg,bc,invA):
     pot = invA_den_chrg + a*mesh.gridx + b
     pot = savgol_filter(pot, 11, 3) # window size 11, polynomial order 3
     efld = -(pot[1:] - pot[0:-1])/mesh.dx
-    return pot, efld
-
-# plot diagnostics
-# validated with function below
-#phi_f = @(t) t.*cos(t); % inline function for the exact solution
-#rho_f = @(t) 2.*sin(t) + t.*cos(t); % inline function for the exact right-hand-side
-#
-#width = 1.0
-#ncellx = 100
-#gridx, dx = np.linspace(0.0,width,ncellx+1,retstep=True)
-###den_chrg = (1-np.power(gridx,2))*1e11
-##den_chrg = np.sin(gridx) + np.multiply(gridx,np.cos(gridx))*1e12
-##den_chrg = np.zeros((ncellx+1,),dtype=np.float)
-#den_chrg = [1.0 if i < 20 or i > 80 else 0 for i in range(ncellx+1) ]
-#den_chrg = np.asarray(den_chrg)*1e10
-#
-#pot, efld = Poisson_solver_1d(ncellx,width,den_chrg,(0.0,0.0))
-## diagnostic plot
-#fig, (ax0,ax1,ax2) = plt.subplots(1,3, figsize=(9,3),
-#      constrained_layout=True)
-#ax0.plot(gridx,den_chrg)
-#ax0.set_title('charge distribution')
-#ax1.plot(gridx,pot)
-#ax1.set_title('potential distribution')
-#ax2.plot(gridx[1:],efld)
-#ax2.set_title('E-field distribution')
-#plt.show()
-#print(pot[0],pot[-1],efld[0],efld[-1])
+    return [pot, efld]

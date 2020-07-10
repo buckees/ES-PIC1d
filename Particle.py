@@ -5,12 +5,12 @@ import Constants as cst
 
 class Particle(object):
     """Stores all particles"""
-    def __init__(self, name, type, mass, charge, temp):
+    def __init__(self, name, type, mass, charge, tmpt):
         self.name = name # str
         self.type = type # str, 'E','Ion','Neut' or 'Bkg'
         self.mass = mass # unit in kg
         self.charge = charge # unit in Coulomb
-        self.temp = temp # unit in eV
+        self.tmpt = tmpt # unit in eV
 
 Eon = Particle('E',   'E',     1.0, -1.0, 2.0)
 Arp = Particle('Ar+', 'Ion',  32.0,  1.0, 0.1)

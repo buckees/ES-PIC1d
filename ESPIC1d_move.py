@@ -24,27 +24,27 @@ def den_asgmt(posn, mesh):
         den[w+1] += f
     return den
 
-def move_ptcl(particle,posn,vels,efld,dt,mesh):
+def move_ptcl(mesh, sp, pv, efld, dt):
     """
     Update position and velocity in dataframe at t1 = t0 + dt
+    :param mesh: all mesh info
+    :param sp: type of particle, class particle
+    :param pv: sp positions and velocities at t0
     :param efld: E-field within each cell, in V/m
-    :param posn: particle positions at t0
-    :param vels: particle velocities at t0
-    :param particle: type of particle, class particle
     :param dt: time step, in sec
     """
-    mass = particle.mass*cst.AMU # mass in kg
-    chrg = particle.charge*cst.UNIT_CHARGE # charge in Coloumb
+    mass = sp.mass*cst.AMU # mass in kg
+    chrg = sp.charge*cst.UNIT_CHARGE # charge in Coloumb
     posn_new, vels_new = [], []
-    frac, whole = np.modf(posn/mesh.dx)
+    frac, whole = np.modf(pv[0]/mesh.dx)
     whole = whole.astype(int)
-    for p, v, w in zip(posn, vels, whole):
+    for p, v, w in zip(pv[0], pv[1], whole):
         ef = efld[w] # E-filed on i_th particle
         accel = ef*chrg/mass # acceleration in m/s2
         p += v*dt; posn_new.append(p)
         v += accel*dt; vels_new.append(v)
     posn_new, vels_new = check_bdry(posn_new,vels_new,mesh)
-    return posn_new, vels_new
+    return [posn_new, vels_new]
 
 def check_bdry(posn, vels, mesh):
     """
