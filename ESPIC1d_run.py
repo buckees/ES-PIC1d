@@ -34,8 +34,8 @@ Eon_den_init = 1.0e15 # in m-3, initial electron density
 den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density 
 
 # Operation Parameters
-num_ptcl = 10000 # number of particles, should be >> ncellx to reduce noise
-dt = 1.0e-10 # in sec
+num_ptcl = 100000 # number of particles, should be >> ncellx to reduce noise
+dt = 1.0e-12 # in sec
 
 den_per_ptcl = Eon_den_init/num_ptcl # density contained in one particle
 
@@ -84,3 +84,4 @@ for i in range(num_iter):
         out.plot_diag(Mesh, Eon_pv, Arp_pv, chrg_den, pe, i, num_ptcl)
 
 print("-total time %s -" % str(timedelta(seconds=(int(time.time() - t0)))))
+print("-- total plasma time %d ns --" % (dt*num_ptcl/1e-9))
