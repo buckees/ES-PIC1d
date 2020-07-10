@@ -48,9 +48,6 @@ posn_Arp, vels_Arp = init.init_data(num_ptcl,ptcl.Arp)
 posn_Eon = posn_Eon*init.Mesh.width
 posn_Arp = posn_Eon.copy()
 
-# create mesh
-#gridx, cell_center, dx = init.init_mesh(ncellx,width)
-
 # initilize potential on cell boudaries
 pot, efld = init.init_pot(init.Mesh,bc)
 
@@ -61,12 +58,13 @@ den_chrg = (ptcl.Eon.charge*den_Eon + ptcl.Arp.charge*den_Arp)*den_per_ptcl
 den_chrg = savgol_filter(den_chrg, 11, 3) # window size 11, polynomial order 3
 
 # update potential according to assigned charges to nodes
-pot, efld = ps1d.Poisson_solver_1d(init.Mesh,den_chrg,bc)
+invA = ps1d.calc_invA(init.Mesh)
+pot, efld = ps1d.Poisson_solver_1d(init.Mesh,den_chrg,bc, invA)
 # move particles
 posn_Eon, vels_Eon = move.move_ptcl(ptcl.Eon,posn_Eon,vels_Eon,efld,dt,init.Mesh)
 posn_Arp, vels_Arp = move.move_ptcl(ptcl.Arp,posn_Arp,vels_Arp,efld,dt,init.Mesh)
 
-num_iter = 901 # number of iterations
+num_iter = 1501 # number of iterations
 nout_iter = 300
 for i in range(num_iter):
     # assign charge densities to grid nodes, unit in UNIT_CHARGE
@@ -76,7 +74,7 @@ for i in range(num_iter):
                 ptcl.Arp.charge*den_Arp)*den_per_ptcl
     den_chrg = savgol_filter(den_chrg, 11, 3) # window size 11, polynomial order 3
     # update potential according to assigned charges to nodes
-    pot, efld = ps1d.Poisson_solver_1d(init.Mesh,den_chrg,bc)
+    pot, efld = ps1d.Poisson_solver_1d(init.Mesh,den_chrg,bc, invA)
     # move particles
     posn_Eon, vels_Eon = move.move_ptcl(ptcl.Eon,posn_Eon,vels_Eon,
                                         efld,dt,init.Mesh)
