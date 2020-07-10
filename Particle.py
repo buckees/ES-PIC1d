@@ -12,8 +12,9 @@ class Particle(object):
         self.charge = charge # unit in Coulomb
         self.tmpt = tmpt # unit in eV
 
-Eon = Particle('E',   'E',     1.0, -1.0, 2.0)
-Arp = Particle('Ar+', 'Ion',  32.0,  1.0, 0.1)
-Ar  = Particle('Ar',  'Bkg',  32.0,  0.0, 0.025)
-H   = Particle('H',   'Neut',  1.0,  0.0, 0.025)
-N2  = Particle('N2',  'Bkg',  28.0,  0.0, 0.025)
+# proton-electron mass ratio = 1836.15
+Eon = Particle('E',   'E',    5.45e-4, -1.0, 2.0) 
+Arp = Particle('Ar+', 'Ion',  32.0,     1.0, 0.1)
+Ar  = Particle('Ar',  'Bkg',  32.0,     0.0, 0.025)
+H   = Particle('H',   'Neut',  1.0,     0.0, 0.025)
+N2  = Particle('N2',  'Bkg',  28.0,     0.0, 0.025)

@@ -16,11 +16,14 @@ def den_asgmt(posn, mesh):
     :param gridx: grid/cell_boundary coordinate in x direction
     :param den_per_ptcl: density contained in a particle
     """
-    den = np.full((mesh.ncellx+1,),1.0e-5)
     frac, whole = np.modf(posn/mesh.dx)
     whole = whole.astype(int)
+    return make_asgmt(whole, frac, mesh.ncellx)
+
+def make_asgmt(whole, frac, ncellx):
+    den = np.full((ncellx+1,),1.0e-5)
     for w, f in zip(whole, frac):
-        den[w] += 1 - f
+        den[w] += 1.0 - f
         den[w+1] += f
     return den
 
@@ -33,18 +36,21 @@ def move_ptcl(mesh, sp, pv, efld, dt):
     :param efld: E-field within each cell, in V/m
     :param dt: time step, in sec
     """
-    mass = sp.mass*cst.AMU # mass in kg
-    chrg = sp.charge*cst.UNIT_CHARGE # charge in Coloumb
-    posn_new, vels_new = [], []
+    accel = efld*sp.charge/sp.mass*cst.UNIT_CHARGE/cst.AMU
     frac, whole = np.modf(pv[0]/mesh.dx)
     whole = whole.astype(int)
-    for p, v, w in zip(pv[0], pv[1], whole):
-        ef = efld[w] # E-filed on i_th particle
-        accel = ef*chrg/mass # acceleration in m/s2
-        p += v*dt; posn_new.append(p)
-        v += accel*dt; vels_new.append(v)
-    posn_new, vels_new = check_bdry(posn_new,vels_new,mesh)
-    return [posn_new, vels_new]
+    pv = make_move(pv[0], pv[1], whole, accel, dt, mesh.width)
+    return pv
+
+def make_move(posn, vels, whole, accel, dt, width):
+    posn_new, vels_new = [], []
+    for p, v, w in zip(posn, vels, whole):
+        p += v*dt; 
+        if (0.001 < p < width*0.999):
+            v += accel[w]*dt; 
+            posn_new.append(p)
+            vels_new.append(v)
+    return [np.asarray(posn_new), np.asarray(vels_new)]
 
 def check_bdry(posn, vels, mesh):
     """
