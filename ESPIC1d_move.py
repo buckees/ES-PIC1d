@@ -4,6 +4,7 @@
 
 import Constants as cst
 import numpy as np
+from numba import njit
 
 def den_asgmt(posn, mesh):
     """
@@ -20,6 +21,7 @@ def den_asgmt(posn, mesh):
     whole = whole.astype(int)
     return make_asgmt(whole, frac, mesh.ncellx)
 
+@njit
 def make_asgmt(whole, frac, ncellx):
     den = np.full((ncellx+1,),1.0e-5)
     for w, f in zip(whole, frac):
@@ -42,6 +44,7 @@ def move_ptcl(mesh, sp, pv, efld, dt):
     pv = make_move(pv[0], pv[1], whole, accel, dt, mesh.width)
     return pv
 
+@njit
 def make_move(posn, vels, whole, accel, dt, width):
     posn_new, vels_new = [], []
     for p, v, w in zip(posn, vels, whole):

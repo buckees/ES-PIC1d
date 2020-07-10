@@ -12,7 +12,7 @@ from ESPIC1d_mesh import Mesh
 import ESPIC1d_init as init
 import ESPIC1d_move as move
 import ESPIC1d_out as out
-from Particle import Eon, Arp, Ar
+from Species import Eon, Arp, Ar
 import Poisson_solver_1d as ps1d
 
 # python built-in modules
@@ -84,4 +84,4 @@ for i in range(num_iter):
         out.plot_diag(Mesh, Eon_pv, Arp_pv, chrg_den, pe, i, num_ptcl)
 
 print("-total time %s -" % str(timedelta(seconds=(int(time.time() - t0)))))
-print("-- total plasma time %d ns --" % (dt*num_ptcl/1e-9))
+print("-- total plasma time %d ns --"    % (dt*num_iter/1e-9))

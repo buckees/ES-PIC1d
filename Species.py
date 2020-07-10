@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-# Define the class of Particle
+# Define the class of SP
 
 import Constants as cst
 
-class Particle(object):
-    """Stores all particles"""
+class SP(object):
+    """Stores all SPs"""
     def __init__(self, name, type, mass, charge, tmpt):
         self.name = name # str
         self.type = type # str, 'E','Ion','Neut' or 'Bkg'
@@ -13,8 +13,8 @@ class Particle(object):
         self.tmpt = tmpt # unit in eV
 
 # proton-electron mass ratio = 1836.15
-Eon = Particle('E',   'E',    5.45e-4, -1.0, 2.0) 
-Arp = Particle('Ar+', 'Ion',  32.0,     1.0, 0.1)
-Ar  = Particle('Ar',  'Bkg',  32.0,     0.0, 0.025)
-H   = Particle('H',   'Neut',  1.0,     0.0, 0.025)
-N2  = Particle('N2',  'Bkg',  28.0,     0.0, 0.025)
+Eon = SP('E',   'E',    5.45e-4, -1.0, 2.0) 
+Arp = SP('Ar+', 'Ion',  32.0,     1.0, 0.1)
+Ar  = SP('Ar',  'Bkg',  32.0,     0.0, 0.025)
+H   = SP('H',   'Neut',  1.0,     0.0, 0.025)
+N2  = SP('N2',  'Bkg',  28.0,     0.0, 0.025)
