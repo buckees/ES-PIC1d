@@ -2,9 +2,9 @@
 # This ES-PIC_run.py runs the PIC simulation
 # All in SI unit
 
+from datetime import timedelta 
 import time
 t0 = time.time()
-
 
 # modules from *.py in the same folder
 import Constants as cst
@@ -16,7 +16,6 @@ import Poisson_solver_1d as ps1d
 
 # python built-in modules
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
 
 # Geometry and Mesh
@@ -90,6 +89,4 @@ for i in range(num_iter):
         out.plot_diag(init.Mesh,posn_Eon, vels_Eon, posn_Arp, vels_Arp,
                       den_chrg, pot, efld, i, num_ptcl)
 
-
-from datetime import timedelta
 print("-total time %s -" % str(timedelta(seconds=(int(time.time() - t0)))))

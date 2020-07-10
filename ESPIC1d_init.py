@@ -7,7 +7,7 @@ import numpy as np
 #import pandas as pd
 
 class Mesh(object):
-    """Stores all particles"""
+    """Stores all mesh information"""
     def __init__(self, ncellx, width, dx, gridx, cell_cnt):
         self.ncellx = ncellx # number of cells in x direction
         self.width = width # domain size in 1d, in meter
