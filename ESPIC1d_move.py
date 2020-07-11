@@ -50,11 +50,11 @@ def make_move(posn, vels, whole, accel, dt, width):
     v_left, v_right = [], []
     for p, v, w in zip(posn, vels, whole):
         p += v*dt; 
-        if (0.001 < p < width*0.999):
+        if (width*0.001 < p < width*0.999):
             v += accel[w]*dt; 
             posn_keep.append(p); vels_keep.append(v)
         else:
-            if p <= 0.001: 
+            if p <= width*0.001: 
                 v_left.append(v)
             else:
                 v_right.append(v)
