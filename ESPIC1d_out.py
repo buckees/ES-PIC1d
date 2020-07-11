@@ -5,7 +5,7 @@
 #
 import matplotlib.pyplot as plt
 
-def plot_diag(mesh, Eon_pv, Arp_pv,
+def plot_diag(mesh, Eon_pv, Arp_pv, Eon_clct, Arp_clct, 
               chrg_den, pe, iteration, num_ptcl):
     fig, ax = plt.subplots(2,3, figsize=(15,6),
       constrained_layout=True)
@@ -20,6 +20,13 @@ def plot_diag(mesh, Eon_pv, Arp_pv,
     ax[0,2].plot(Eon_pv[0], Eon_pv[1], 'bo')
     ax[0,2].plot(Arp_pv[0], Arp_pv[1], 'ro')
     ax[0,2].set_title('nPtcl=%d' % num_ptcl)
+    
+    ax[1,0].hist(Eon_clct[0], bins=20, histtype='step', color='blue')
+    ax[1,0].hist(Eon_clct[1], bins=20, histtype='step', color='red')
+    ax[1,0].set_title('v_Eon count')
+    ax[1,1].hist(Arp_clct[0], bins=20, histtype='step', color='blue')
+    ax[1,1].hist(Arp_clct[1], bins=20, histtype='step', color='red')
+    ax[1,1].set_title('v_Ar+ count')
     fig.savefig('.\Figures\ITER_{:08}.png'.format(iteration))
     plt.close(fig)
 

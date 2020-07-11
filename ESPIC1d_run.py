@@ -28,8 +28,10 @@ press_mT = 100.0 # pressure, in mTorr
 pressure = press_mT/1.0e3*cst.TORR2PA # in Pa, 1 Torr = 133.322 Pa
 Ar_den_init = pressure/(cst.KB*Ar.tmpt*cst.EV2K) # in m-3, N/V = P/(kb*T) ideal gas law
 Eon_temp = [Eon.tmpt] # initial temperature for Eon, in eV
-Arp_temp = [Arp.tmpt] # initial temperature for Arp, in eV
+Arp_temp = [Arp.tmpt] # initial temperature for Ar+, in eV
 bc = (0.0, 0.0) # left and right boundary conditions, in Volt 
+Eon_clct = [[], []] # collect Eon particles bombarding left and right surface
+Arp_clct = [[], []] # collect Ar+ particles bombarding left and right surface
 Eon_den_init = 1.0e15 # in m-3, initial electron density
 den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density 
 
@@ -57,8 +59,10 @@ chrg_den = savgol_filter(chrg_den, 11, 3) # window size 11, polynomial order 3
 invA = ps1d.calc_invA(Mesh)
 pe = ps1d.Poisson_solver_1d(Mesh, chrg_den, bc, invA) # pe contains [pot, efld]
 # move particles
-Eon_pv = move.move_ptcl(Mesh, Eon, Eon_pv, pe[1], dt)
-Arp_pv = move.move_ptcl(Mesh, Arp, Arp_pv, pe[1], dt)
+Eon_pv, v_clct = move.move_ptcl(Mesh, Eon, Eon_pv, pe[1], dt)
+Eon_clct[0] += v_clct[0]; Eon_clct[1] += v_clct[1];
+Arp_pv, v_clct = move.move_ptcl(Mesh, Arp, Arp_pv, pe[1], dt)
+Arp_clct[0] += v_clct[0]; Arp_clct[1] += v_clct[1];
 
 num_iter = 15001 # number of iterations
 nout_iter = 1000
@@ -74,14 +78,17 @@ for i in range(num_iter):
     # update potential according to assigned charges to nodes
     pe = ps1d.Poisson_solver_1d(Mesh, chrg_den, bc, invA) # pe contains [pot, efld]
     # move particles
-    Eon_pv = move.move_ptcl(Mesh, Eon, Eon_pv, pe[1], dt)
-    Arp_pv = move.move_ptcl(Mesh, Arp, Arp_pv, pe[1], dt)
+    Eon_pv, v_clct = move.move_ptcl(Mesh, Eon, Eon_pv, pe[1], dt)
+    Eon_clct[0] += v_clct[0]; Eon_clct[1] += v_clct[1];
+    Arp_pv, v_clct = move.move_ptcl(Mesh, Arp, Arp_pv, pe[1], dt)
+    Arp_clct[0] += v_clct[0]; Arp_clct[1] += v_clct[1];
     num_ptcl = len(Eon_pv[0])
     if i % nout_iter == 0:
         print("iter = %d" % i, 
               "- time %s -" % str(timedelta(seconds=(int(time.time() - t0)))))
         # plot animation
-        out.plot_diag(Mesh, Eon_pv, Arp_pv, chrg_den, pe, i, num_ptcl)
+        out.plot_diag(Mesh, Eon_pv, Arp_pv, Eon_clct, Arp_clct, 
+                      chrg_den, pe, i, num_ptcl)
 
 print("-total time %s -" % str(timedelta(seconds=(int(time.time() - t0)))))
 print("-- total plasma time %d ns --"    % (dt*num_iter/1e-9))
