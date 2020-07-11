@@ -41,30 +41,24 @@ def move_ptcl(mesh, sp, pv, efld, dt):
     accel = efld*sp.charge/sp.mass*cst.UNIT_CHARGE/cst.AMU
     frac, whole = np.modf(pv[0]/mesh.dx)
     whole = whole.astype(int)
-    pv = make_move(pv[0], pv[1], whole, accel, dt, mesh.width)
-    return pv
+    pv, v_clct = make_move(pv[0], pv[1], whole, accel, dt, mesh.width)
+    return pv, v_clct
 
 @njit
 def make_move(posn, vels, whole, accel, dt, width):
-    posn_new, vels_new = [], []
+    posn_keep, vels_keep = [], []
+    v_left, v_right = [], []
     for p, v, w in zip(posn, vels, whole):
         p += v*dt; 
-        if (0.001 < p < width*0.999):
+        if (width*0.001 < p < width*0.999):
             v += accel[w]*dt; 
-            posn_new.append(p)
-            vels_new.append(v)
-    return [np.asarray(posn_new), np.asarray(vels_new)]
-
-def check_bdry(posn, vels, mesh):
-    """
-    Remove particles which go beyond the domain, (p < 0.0  or p > width)
-    :param posn: particle positions at t0
-    :param vels: particle velocities at t0
-    :param width: domain width
-    """
-    index_remove = []
-    for i, p in enumerate(posn):
-        if not (0.0 < p < mesh.width):
-            index_remove.append(i)
-    return np.delete(posn,index_remove), np.delete(vels,index_remove)
+            posn_keep.append(p); vels_keep.append(v)
+        else:
+            if p <= width*0.001: 
+                v_left.append(v)
+            else:
+                v_right.append(v)
+    posn_keep = np.asarray(posn_keep); vels_keep = np.asarray(vels_keep)
+#    v_left = np.asarray(v_left); v_right = np.asarray(v_right)
+    return [posn_keep, vels_keep], [v_left, v_right]
     
