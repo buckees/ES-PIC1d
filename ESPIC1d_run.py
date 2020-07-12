@@ -10,7 +10,7 @@ t0 = time.time()
 import Constants as cst
 from ESPIC1d_mesh import Mesh
 import ESPIC1d_init as init
-import ESPIC1d_move as move
+import ESPIC1d_leapfrog as frog
 import ESPIC1d_out as out
 from Species import Eon, Arp, Ar
 import Poisson_solver_1d as ps1d
@@ -37,7 +37,7 @@ den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density
 
 # Operation Parameters
 num_ptcl = 100000 # number of particles, should be >> ncellx to reduce noise
-dt = 1.0e-13 # in sec
+dt = 1.0e-12 # in sec
 
 den_per_ptcl = Eon_den_init/num_ptcl # density contained in one particle
 
@@ -48,8 +48,8 @@ Eon_pv[0] = Eon_pv[0]*Mesh.width
 Arp_pv[0] = Eon_pv[0].copy()
 
 # assign charge densities to grid nodes, unit in UNIT_CHARGE
-Eon_den = move.den_asgmt(Eon_pv[0], Mesh)
-Arp_den = move.den_asgmt(Arp_pv[0], Mesh)
+Eon_den = frog.den_asgmt(Eon_pv[0], Mesh)
+Arp_den = frog.den_asgmt(Arp_pv[0], Mesh)
 # add up all charge densities
 chrg_den = (Eon.charge*Eon_den + 
             Arp.charge*Arp_den)*den_per_ptcl # unit in UNIT_CHARGE
@@ -58,30 +58,44 @@ chrg_den = savgol_filter(chrg_den, 11, 3) # window size 11, polynomial order 3
 # update potential according to assigned charges to nodes
 invA = ps1d.calc_invA(Mesh)
 pe = ps1d.Poisson_solver_1d(Mesh, chrg_den, bc, invA) # pe contains [pot, efld]
-# move particles
-Eon_pv, v_clct = move.move_ptcl(Mesh, Eon, Eon_pv, pe[1], dt)
+# using leapfrog algrithm to update position
+Eon_pv, v_clct = frog.move_leapfrog1(Mesh, Eon, Eon_pv, pe[1], dt)
 Eon_clct[0] += v_clct[0]; Eon_clct[1] += v_clct[1];
-Arp_pv, v_clct = move.move_ptcl(Mesh, Arp, Arp_pv, pe[1], dt)
+Arp_pv, v_clct = frog.move_leapfrog1(Mesh, Arp, Arp_pv, pe[1], dt)
 Arp_clct[0] += v_clct[0]; Arp_clct[1] += v_clct[1];
+
+# update charge density at t1
+Eon_den = frog.den_asgmt(Eon_pv[0], Mesh)
+Arp_den = frog.den_asgmt(Arp_pv[0], Mesh)
+chrg_den = (Eon.charge*Eon_den + 
+            Arp.charge*Arp_den)*den_per_ptcl # unit in UNIT_CHARGE
+chrg_den = savgol_filter(chrg_den, 11, 3) # window size 11, polynomial order 3
+# update potential and E-field at t1
+pe = ps1d.Poisson_solver_1d(Mesh, chrg_den, bc, invA) # pe contains [pot, efld]
+# update only velocity at t1
+Eon_pv = frog.move_leapfrog2(Mesh, Eon, Eon_pv, pe[1], dt)
+Arp_pv = frog.move_leapfrog2(Mesh, Arp, Arp_pv, pe[1], dt)
 
 num_iter = 15001 # number of iterations
 nout_iter = 1000
 for i in range(num_iter):
-    # assign charge densities to grid nodes, unit in UNIT_CHARGE
-    Eon_den = move.den_asgmt(Eon_pv[0], Mesh)
-    Arp_den = move.den_asgmt(Arp_pv[0], Mesh)
-    # add up all charge densities
+    # using leapfrog algrithm to update position
+    Eon_pv, v_clct = frog.move_leapfrog1(Mesh, Eon, Eon_pv, pe[1], dt)
+    Eon_clct[0] += v_clct[0]; Eon_clct[1] += v_clct[1];
+    Arp_pv, v_clct = frog.move_leapfrog1(Mesh, Arp, Arp_pv, pe[1], dt)
+    Arp_clct[0] += v_clct[0]; Arp_clct[1] += v_clct[1];
+    # update charge density at t1
+    Eon_den = frog.den_asgmt(Eon_pv[0], Mesh)
+    Arp_den = frog.den_asgmt(Arp_pv[0], Mesh)
     chrg_den = (Eon.charge*Eon_den + 
                 Arp.charge*Arp_den)*den_per_ptcl # unit in UNIT_CHARGE
     chrg_den = savgol_filter(chrg_den, 11, 3) # window size 11, polynomial order 3
-    
-    # update potential according to assigned charges to nodes
+    # update potential and E-field at t1
     pe = ps1d.Poisson_solver_1d(Mesh, chrg_den, bc, invA) # pe contains [pot, efld]
-    # move particles
-    Eon_pv, v_clct = move.move_ptcl(Mesh, Eon, Eon_pv, pe[1], dt)
-    Eon_clct[0] += v_clct[0]; Eon_clct[1] += v_clct[1];
-    Arp_pv, v_clct = move.move_ptcl(Mesh, Arp, Arp_pv, pe[1], dt)
-    Arp_clct[0] += v_clct[0]; Arp_clct[1] += v_clct[1];
+    # update only velocity at t1
+    Eon_pv = frog.move_leapfrog2(Mesh, Eon, Eon_pv, pe[1], dt)
+    Arp_pv = frog.move_leapfrog2(Mesh, Arp, Arp_pv, pe[1], dt)
+
     num_ptcl = len(Eon_pv[0])
     if i % nout_iter == 0:
         print("iter = %d" % i, 
