@@ -95,6 +95,8 @@ for i in range(num_iter):
     # update only velocity at t1
     Eon_pv = frog.move_leapfrog2(Mesh, Eon, Eon_pv, pe[1], dt)
     Arp_pv = frog.move_leapfrog2(Mesh, Arp, Arp_pv, pe[1], dt)
+    # calc eon impact ionization
+    
 
     num_ptcl = len(Eon_pv[0])
     if i % nout_iter == 0:
