@@ -14,12 +14,12 @@ def ioniz(Eon_pv, Arp_pv, ergs, dt):
     # assuming 0.1% prob for ionization during dt for eon erg > 100 eV
     # assuming no erg loss after ionization
     # created eon has initial vels = 0.0 m/s
-    posn_add = Eon_pv[0][ergs >= 100.0]
+    posn_add = Eon_pv[0][ergs >= 30.0]
     if not posn_add.size:
         return Eon_pv, Arp_pv
     
     rand = np.random.uniform(0.0, 0.1, len(posn_add))
-    posn_add = posn_add[rand <= 0.001*dt/1e-12]
+    posn_add = posn_add[rand <= 0.1*dt/1e-12]
     if not posn_add.size:
         return Eon_pv, Arp_pv
     
@@ -27,4 +27,6 @@ def ioniz(Eon_pv, Arp_pv, ergs, dt):
     Arp_pv[0] = np.append(Arp_pv[0], posn_add)
     Eon_pv[1] = np.append(Eon_pv[1], np.zeros(posn_add.size))
     Arp_pv[1] = np.append(Arp_pv[1], np.zeros(posn_add.size))
+    
+    print('%d particles are added' % posn_add.size)
     return Eon_pv, Arp_pv

@@ -30,14 +30,14 @@ pressure = press_mT/1.0e3*cst.TORR2PA # in Pa, 1 Torr = 133.322 Pa
 Ar_den_init = pressure/(cst.KB*Ar.tmpt*cst.EV2K) # in m-3, N/V = P/(kb*T) ideal gas law
 Eon_temp = [Eon.tmpt] # initial temperature for Eon, in eV
 Arp_temp = [Arp.tmpt] # initial temperature for Ar+, in eV
-bc = (0.0, 0.0) # left and right boundary conditions, in Volt 
+bc = (100.0, 0.0) # left and right boundary conditions, in Volt 
 Eon_clct = [[], []] # collect Eon particles bombarding left and right surface
 Arp_clct = [[], []] # collect Ar+ particles bombarding left and right surface
 Eon_den_init = 1.0e15 # in m-3, initial electron density
 den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density 
 
 # Operation Parameters
-num_ptcl = 10000 # number of particles, should be >> ncellx to reduce noise
+num_ptcl = 100000 # number of particles, should be >> ncellx to reduce noise
 dt = 1.0e-12 # in sec
 
 den_per_ptcl = Eon_den_init/num_ptcl # density contained in one particle
@@ -99,6 +99,8 @@ for i in range(num_iter):
     # calc eon impact ionization
     # convert vels to ergs
     Eon_ergs = np.power(Eon_pv[1]*cst.VEL2EV,2)
+    if np.amax(Eon_ergs) > 30.0:
+        print ('max eon erg = %.1f' % np.amax(Eon_ergs))
     
     Eon_pv, Arp_pv = rct.ioniz(Eon_pv, Arp_pv, Eon_ergs, dt)
     
