@@ -12,6 +12,7 @@ from ESPIC1d_mesh import Mesh
 import ESPIC1d_init as init
 import ESPIC1d_leapfrog as frog
 import ESPIC1d_out as out
+import ESPIC1d_rct as rct
 from Species import Eon, Arp, Ar
 import Poisson_solver_1d as ps1d
 
@@ -36,7 +37,7 @@ Eon_den_init = 1.0e15 # in m-3, initial electron density
 den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density 
 
 # Operation Parameters
-num_ptcl = 100000 # number of particles, should be >> ncellx to reduce noise
+num_ptcl = 10000 # number of particles, should be >> ncellx to reduce noise
 dt = 1.0e-12 # in sec
 
 den_per_ptcl = Eon_den_init/num_ptcl # density contained in one particle
@@ -96,8 +97,11 @@ for i in range(num_iter):
     Eon_pv = frog.move_leapfrog2(Mesh, Eon, Eon_pv, pe[1], dt)
     Arp_pv = frog.move_leapfrog2(Mesh, Arp, Arp_pv, pe[1], dt)
     # calc eon impact ionization
+    # convert vels to ergs
+    Eon_ergs = np.power(Eon_pv[1]*cst.VEL2EV,2)
     
-
+    Eon_pv, Arp_pv = rct.ioniz(Eon_pv, Arp_pv, Eon_ergs, dt)
+    
     num_ptcl = len(Eon_pv[0])
     if i % nout_iter == 0:
         print("iter = %d" % i, 

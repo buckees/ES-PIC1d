@@ -9,4 +9,4 @@ KB = 1.38064852e-23 # Boltzmann Constant, unit in m2*kg*s-2*K-1 or J/K
 EV2K = 11604.45 # 1 eV = 1.602 177 33 × 10-19 J = 11 604.45 K.
 TORR2PA = 133.3 # 1 Torr = 133.3 Pa
 EV2VEL = 6.0e5 # with 1 eV, electron has speed of 6.0e5 m/s, sqrt relationship
-VEL2EV = 1/EV2VEL # 1 m/s = 1/6.0e-5 eV, sqr relationship
+VEL2EV = 1/EV2VEL # 1 m/s = 1/(6.0e5) eV, sqr relationship
