@@ -10,3 +10,5 @@ EV2K = 11604.45 # 1 eV = 1.602 177 33 × 10-19 J = 11 604.45 K.
 TORR2PA = 133.3 # 1 Torr = 133.3 Pa
 EV2VEL = 6.0e5 # with 1 eV, electron has speed of 6.0e5 m/s, sqrt relationship
 VEL2EV = 1/EV2VEL # 1 m/s = 1/(6.0e5) eV, sqr relationship
+J2EV = 6.242e18 # 1 Joule = 6.242e18 eV
+EV2J = 1.6e-19 # 1 eV = 1.6e-19 eV

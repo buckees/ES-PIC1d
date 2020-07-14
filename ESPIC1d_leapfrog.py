@@ -85,11 +85,16 @@ def move_leapfrog2(mesh, sp, pv, efld, dt):
     whole = whole.astype(int)
     # update posn, p(t1) = p(t0) + v(t0)*dt + 0.5*a(t0)*dt*dt
     pv[1] += 0.5*accel[whole]*dt
-    pv[1] = move_coll(pv[1], 0.1)
+    pv[1] = move_coll(pv[1], 1e-3)
     return pv
 
 def move_coll(vels, prob):
-    prob = np.random.uniform(0.0, 1.0, size=(len(vels), ))
-    sign = np.asarray([1.0 if item else -1.0 for item in prob])
-    vels = vels*sign
+    rand = np.random.uniform(0.0, 1.0, size=(len(vels), ))
+    vels = vels*np.sign(rand - prob)
+    return vels
+
+def pow_dpst(vels, power, dt):
+    ergs = np.power(vels*cst.VEL2EV, 2)
+    ergs += power*dt/len(ergs)
+    vels = np.power(ergs, 0.5)*cst.EV2VEL*np.sign(vels)
     return vels

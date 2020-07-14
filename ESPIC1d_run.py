@@ -34,6 +34,7 @@ pressure = press_mT/1.0e3*cst.TORR2PA # in Pa, 1 Torr = 133.322 Pa
 Ar_den_init = pressure/(cst.KB*Ar.tmpt*cst.EV2K) # in m-3, N/V = P/(kb*T) ideal gas law
 Eon_temp = [Eon.tmpt] # initial temperature for Eon, in eV
 Arp_temp = [Arp.tmpt] # initial temperature for Ar+, in eV
+power_e = 0.1 # power into Eons, in W
 bc = [0.0, 0.0] # left and right boundary conditions, in Volt 
 Eon_clct = [[], []] # collect Eon particles bombarding left and right surface
 Arp_clct = [[], []] # collect Ar+ particles bombarding left and right surface
@@ -105,10 +106,12 @@ for i in range(num_iter):
     # update only velocity at t1
     Eon_pv = frog.move_leapfrog2(Mesh, Eon, Eon_pv, pe[1], dt)
     Arp_pv = frog.move_leapfrog2(Mesh, Arp, Arp_pv, pe[1], dt)
-    # calc eon impact ionization
+    # update Eon vels due to power deposition
+    Eon_pv[1] = frog.pow_dpst(Eon_pv[1], power_e, dt)
     # convert vels to ergs
     Eon_ergs = np.power(Eon_pv[1]*cst.VEL2EV,2) 
     Arp_ergs = np.power(Arp_pv[1]*cst.VEL2EV,2) 
+    # calc eon impact ionization
     Eon_pv, Arp_pv, ptcl_rec[2] = rct.ioniz(Eon_pv, Arp_pv, Eon_ergs, dt, 
                                          ptcl_rec[2])
     

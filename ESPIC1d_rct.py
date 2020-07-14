@@ -14,7 +14,7 @@ def ioniz(Eon_pv, Arp_pv, ergs, dt, ptcl_add):
     # assuming 0.1% prob for ionization during dt for eon erg > 100 eV
     # assuming no erg loss after ionization
     # created eon has initial vels = 0.0 m/s
-    posn_add = Eon_pv[0][ergs >= 15.0]
+    posn_add = Eon_pv[0][ergs >= 25.0]
     if not posn_add.size:
         ptcl_add.append(posn_add.size)
         return Eon_pv, Arp_pv, ptcl_add
