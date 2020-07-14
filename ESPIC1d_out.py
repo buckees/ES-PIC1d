@@ -6,7 +6,7 @@
 import matplotlib.pyplot as plt
 
 def plot_diag(mesh, Eon_pv, Arp_pv, Eon_clct, Arp_clct, 
-              chrg_den, pe, iteration, ergs_mean, ptcl_rec):
+              chrg_den, pe, iteration, ergs_mean, ergs_max, ptcl_rec):
     fig, ax = plt.subplots(2,3, figsize=(15,6),
       constrained_layout=True)
     ax[0,0].hist(Eon_pv[0], bins=20, histtype='step', color='blue')
@@ -31,7 +31,7 @@ def plot_diag(mesh, Eon_pv, Arp_pv, Eon_clct, Arp_clct,
     
     ax[1,1].plot(ergs_mean[0], 'b-')
     ax_temp11 = ax[1,1].twinx()
-    ax_temp11.plot(ergs_mean[1], 'r-')
+    ax_temp11.plot(ergs_max[0], 'r-')
     
     ax[1,2].plot(ptcl_rec[0], 'k-')
     ax_temp12 = ax[1,2].twinx()

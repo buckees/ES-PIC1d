@@ -41,7 +41,7 @@ Eon_den_init = 1.0e15 # in m-3, initial electron density
 den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density 
 
 # Operation Parameters
-num_ptcl = 100000 # number of particles, should be >> ncellx to reduce noise
+num_ptcl = 10000 # number of particles, should be >> ncellx to reduce noise
 dt = 1.0e-12 # in sec
 
 den_per_ptcl = Eon_den_init/num_ptcl # density contained in one particle
@@ -82,9 +82,9 @@ Eon_pv = frog.move_leapfrog2(Mesh, Eon, Eon_pv, pe[1], dt)
 Arp_pv = frog.move_leapfrog2(Mesh, Arp, Arp_pv, pe[1], dt)
 
 ptcl_rec = [[], [], []] # [0] = num_ptcl; [1] = ptcl_rm; [2] = ptcl_add
-ergs_mean = [[], []] # [0] = Eon mean erg; [1] = Arp mean erg;
+ergs_mean, ergs_max = [[], []], [[], []] # [0] = Eon mean erg; [1] = Arp mean erg;
 num_iter = 5000001 # number of iterations
-nout_iter = 2000
+nout_iter = 3000
 for i in range(num_iter):
     # using leapfrog algrithm to update position
     Eon_pv, v_clct = frog.move_leapfrog1(Mesh, Eon, Eon_pv, pe[1], dt)
@@ -115,12 +115,14 @@ for i in range(num_iter):
     ptcl_rec[0].append(len(Eon_pv[0]))
     ergs_mean[0].append(np.mean(Eon_ergs))
     ergs_mean[1].append(np.mean(Arp_ergs))
+    ergs_max[0].append(np.amax(Eon_ergs))
+    ergs_max[1].append(np.amax(Arp_ergs))
     if i % nout_iter == 0:
         print("iter = %d" % i, 
               "- time %s -" % str(timedelta(seconds=(int(time.time() - t0)))))
         # plot animation
         out.plot_diag(Mesh, Eon_pv, Arp_pv, Eon_clct, Arp_clct, 
-                      chrg_den, pe, i, ergs_mean, ptcl_rec)
+                      chrg_den, pe, i, ergs_mean, ergs_max, ptcl_rec)
     if ptcl_rec[0][-1] < num_ptcl*0.01: break
 
 print("-total time %s -" % str(timedelta(seconds=(int(time.time() - t0)))))
