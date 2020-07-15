@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # Define the class of SP
 
-import Constants as cst
-
 class SP(object):
     """Stores all SPs"""
     def __init__(self, name, type, mass, charge, tmpt):
@@ -13,7 +11,7 @@ class SP(object):
         self.tmpt = tmpt # unit in eV
 
 # proton-electron mass ratio = 1836.15
-Eon = SP('E',   'E',    5.45e-4, -1.0, 2.0) 
+Eon = SP('E',   'E',    5.45e-4, -1.0, 5.0) 
 Arp = SP('Ar+', 'Ion',  32.0,     1.0, 0.1)
 Ar  = SP('Ar',  'Bkg',  32.0,     0.0, 0.025)
 H   = SP('H',   'Neut',  1.0,     0.0, 0.025)

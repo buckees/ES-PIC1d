@@ -4,9 +4,11 @@
 # Output results and diagnostics
 #
 import matplotlib.pyplot as plt
+import numpy as np
 
 def plot_diag(mesh, Eon_pv, Arp_pv, Eon_clct, Arp_clct, 
-              chrg_den, pe, iteration, ergs_mean, ergs_max, ptcl_rec):
+              chrg_den, pe, iteration, ergs_mean, ergs_max, ptcl_rec,
+              nout_iter):
     fig, ax = plt.subplots(2,3, figsize=(15,6),
       constrained_layout=True)
     ax[0,0].hist(Eon_pv[0], bins=20, histtype='step', color='blue')
@@ -35,8 +37,10 @@ def plot_diag(mesh, Eon_pv, Arp_pv, Eon_clct, Arp_clct,
     
     ax[1,2].plot(ptcl_rec[0], 'k-')
     ax_temp12 = ax[1,2].twinx()
-    ax_temp12.plot(ptcl_rec[1], 'r-')
-    ax_temp12.plot(ptcl_rec[2], 'b-')
+    temp = np.add.reduceat(ptcl_rec[1], np.arange(0, len(ptcl_rec[1]), nout_iter))
+    ax_temp12.plot(range(0, len(ptcl_rec[1]),nout_iter), temp, 'g-')
+    temp = np.add.reduceat(ptcl_rec[2], np.arange(0, len(ptcl_rec[2]), nout_iter))
+    ax_temp12.plot(range(0, len(ptcl_rec[2]),nout_iter), temp, 'y-')
     fig.savefig('.\Figures\ITER_{:08}.png'.format(iteration))
     plt.close(fig)
 

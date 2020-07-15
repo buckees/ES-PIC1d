@@ -123,7 +123,8 @@ for i in range(num_iter):
               "- time %s -" % str(timedelta(seconds=(int(time.time() - t0)))))
         # plot animation
         out.plot_diag(Mesh, Eon_pv, Arp_pv, Eon_clct, Arp_clct, 
-                      chrg_den, pe, i, ergs_mean, ergs_max, ptcl_rec)
+                      chrg_den, pe, i, ergs_mean, ergs_max, ptcl_rec,
+                      nout_iter)
     if ptcl_rec[0][-1] < num_ptcl*0.01: break
 
 print("-total time %s -" % str(timedelta(seconds=(int(time.time() - t0)))))
