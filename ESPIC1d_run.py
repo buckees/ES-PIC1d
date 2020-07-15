@@ -106,12 +106,13 @@ for i in range(num_iter):
     # update only velocity at t1
     Eon_pv = frog.move_leapfrog2(Mesh, Eon, Eon_pv, pe[1], dt)
     Arp_pv = frog.move_leapfrog2(Mesh, Arp, Arp_pv, pe[1], dt)
+    
+    # calc eon impact ionization
+    Eon_pv, Arp_pv, ptcl_rec[2] = rct.ioniz(Eon_pv, Arp_pv, dt, 
+                                         ptcl_rec[2])
     # convert vels to ergs
     Eon_ergs = np.power(Eon_pv[1]*cst.VEL2EV,2) 
     Arp_ergs = np.power(Arp_pv[1]*cst.VEL2EV,2) 
-    # calc eon impact ionization
-    Eon_pv, Arp_pv, ptcl_rec[2] = rct.ioniz(Eon_pv, Arp_pv, Eon_ergs, dt, 
-                                         ptcl_rec[2])
     
     ptcl_rec[0].append(len(Eon_pv[0]))
     ergs_mean[0].append(np.mean(Eon_ergs))
