@@ -92,9 +92,3 @@ def move_coll(vels, prob):
     rand = np.random.uniform(0.0, 1.0, size=(len(vels), ))
     vels = vels*np.sign(rand - prob)
     return vels
-
-def pow_dpst(vels, power, dt):
-    ergs = np.power(vels*cst.VEL2EV, 2)
-    ergs += power*dt/len(ergs)
-    vels = np.power(ergs, 0.5)*cst.EV2VEL*np.sign(vels)
-    return vels
