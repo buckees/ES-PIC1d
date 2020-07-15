@@ -3,6 +3,7 @@
 # All in SI unit
 
 from os import system as sys
+sys('mkdir Figures')
 sys('rm Figures/*.png')
 
 from datetime import timedelta 
