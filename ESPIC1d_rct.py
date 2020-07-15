@@ -13,17 +13,14 @@ def ioniz(Eon_pv, Arp_pv, dt, ptcl_add):
     prob = Ar_den*rate_coeff*dt
     """
     Eon_ergs = np.power(Eon_pv[1]*cst.VEL2EV,2)
-#    print(np.round(Eon_ergs,1))
     # assuming 0.1% prob for ionization during dt for eon erg > 20 eV
     # assuming erg loss = threshold after ionization
     # created eon has initial vels = 0.0 m/s
     idx = np.where(Eon_ergs >= 20.0)[0]
-#    if not idx.size: return Eon_pv, Arp_pv, ptcl_add    
     rand = np.random.uniform(0.0, 1.0, len(idx))
     idx = idx[rand <= 0.5*dt/1e-12]
-#    print (idx)
+
     posn_add = Eon_pv[0][idx]
-    
     Eon_pv[1][idx] *= np.sqrt((Eon_ergs[idx]-20.0)/Eon_ergs[idx])
     
     Eon_pv[0] = np.append(Eon_pv[0], posn_add)
@@ -31,15 +28,5 @@ def ioniz(Eon_pv, Arp_pv, dt, ptcl_add):
     Eon_pv[1] = np.append(Eon_pv[1], np.zeros(posn_add.size))
     Arp_pv[1] = np.append(Arp_pv[1], np.zeros(posn_add.size))
     ptcl_add.append(posn_add.size)
-#    print('%d particles are added' % posn_add.size)
+
     return Eon_pv, Arp_pv, ptcl_add
-#
-#Eon_pv = [np.asarray([i for i in range(15)]), 
-#          np.random.uniform(3.0*cst.EV2VEL, 6.0*cst.EV2VEL, 15)]
-#
-#Arp_pv = [np.asarray([i for i in range(15)]), np.random.uniform(10.0, 30.0, 15)]
-#ptcl_add = [1, 2, 3]
-#
-#Eon_pv, Arp_pv, ptcl_add = ioniz(Eon_pv, Arp_pv, 1e-12, ptcl_add)
-#Eon_ergs = np.power(Eon_pv[1]*cst.VEL2EV,2)
-#print(np.round(Eon_ergs,1))

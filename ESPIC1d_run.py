@@ -101,7 +101,7 @@ for i in range(num_iter):
                 Arp.charge*Arp_den)*den_per_ptcl # unit in UNIT_CHARGE
     chrg_den = savgol_filter(chrg_den, 11, 3) # window size 11, polynomial order 3
     # update potential and E-field at t1
-    bc[0] = i/200000*100.0*math.sin(i/10000*2.0*math.pi)
+    bc[0] = min(i/200000, 1.0)*20.0*math.sin(i/10000*2.0*math.pi)
     pe = ps1d.Poisson_solver_1d(Mesh, chrg_den, bc, invA) # pe contains [pot, efld]
     # update only velocity at t1
     Eon_pv = frog.move_leapfrog2(Mesh, Eon, Eon_pv, pe[1], dt)
