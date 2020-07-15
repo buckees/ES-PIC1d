@@ -43,7 +43,7 @@ den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density
 
 # Operation Parameters
 num_ptcl = 10000 # number of particles, should be >> ncellx to reduce noise
-dt = 1.0e-12 # in sec
+dt = 1.0e-11 # in sec
 
 den_per_ptcl = Eon_den_init/num_ptcl # density contained in one particle
 
@@ -85,7 +85,7 @@ Arp_pv = frog.move_leapfrog2(Mesh, Arp, Arp_pv, pe[1], dt)
 ptcl_rec = [[], [], []] # [0] = num_ptcl; [1] = ptcl_rm; [2] = ptcl_add
 ergs_mean, ergs_max = [[], []], [[], []] # [0] = Eon mean erg; [1] = Arp mean erg;
 num_iter = 5000001 # number of iterations
-nout_iter = 3000
+nout_iter = 5000
 for i in range(num_iter):
     # using leapfrog algrithm to update position
     Eon_pv, v_clct = frog.move_leapfrog1(Mesh, Eon, Eon_pv, pe[1], dt)
@@ -101,7 +101,7 @@ for i in range(num_iter):
                 Arp.charge*Arp_den)*den_per_ptcl # unit in UNIT_CHARGE
     chrg_den = savgol_filter(chrg_den, 11, 3) # window size 11, polynomial order 3
     # update potential and E-field at t1
-    bc[0] = min(i/200000, 1.0)*20.0*math.sin(i/10000*2.0*math.pi)
+    bc[0] = min(i/200000, 1.0)*25.0*math.sin(i/50000*2.0*math.pi)
     pe = ps1d.Poisson_solver_1d(Mesh, chrg_den, bc, invA) # pe contains [pot, efld]
     # update only velocity at t1
     Eon_pv = frog.move_leapfrog2(Mesh, Eon, Eon_pv, pe[1], dt)
@@ -126,7 +126,9 @@ for i in range(num_iter):
         out.plot_diag(Mesh, Eon_pv, Arp_pv, Eon_clct, Arp_clct, 
                       chrg_den, pe, i, ergs_mean, ergs_max, ptcl_rec,
                       nout_iter)
-    if ptcl_rec[0][-1] < num_ptcl*0.01: break
+    if (ptcl_rec[0][-1] < num_ptcl*0.10 or 
+        ptcl_rec[0][-1] > num_ptcl*10.0):
+        break
 
 print("-total time %s -" % str(timedelta(seconds=(int(time.time() - t0)))))
 print("-- total plasma time %d ns --"    % (dt*num_iter/1e-9))
