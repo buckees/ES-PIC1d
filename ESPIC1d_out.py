@@ -21,8 +21,8 @@ def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct,
     ax[0,1].plot(mesh.gridx, pe[0], 'k-')
     ax_temp01 = ax[0,1].twinx()
     ax_temp01.plot(mesh.cell_cnt, pe[1], 'g-')
-    ax[0,2].plot(Eon_pv[0], Eon_pv[1], 'bo')
-    ax[0,2].plot(Ion_pv[0], Ion_pv[1], 'ro')
+    ax[0,2].plot(Eon_pv[0], vels2ergs(Eon_pv[1], Eon), 'bo')
+    ax[0,2].plot(Ion_pv[0], vels2ergs(Ion_pv[1], Hp),  'ro')
     ax[0,2].set_title('nPtcl=%d' % ptcl_rec[0][-1])
     
     ax[1,0].hist(vels2ergs(Eon_clct[0], Eon), bins=20, 
@@ -46,11 +46,17 @@ def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct,
     ax_temp12.plot(range(0, len(ptcl_rec[1]),nout_iter), temp, 'g-')
     temp = np.add.reduceat(ptcl_rec[2], np.arange(0, len(ptcl_rec[2]), nout_iter))
     ax_temp12.plot(range(0, len(ptcl_rec[2]),nout_iter), temp, 'y-')
+    temp = np.add.reduceat(ptcl_rec[3], np.arange(0, len(ptcl_rec[2]), nout_iter))
+    ax_temp12.plot(range(0, len(ptcl_rec[3]),nout_iter), temp, 'c-')
+    ax_temp12.set_ylim(0, 50)
+    
     fig.savefig('.\Figures\ITER_{:08}.png'.format(iteration))
     plt.close(fig)
 
 def vels2ergs(v_clct, sp):
     v_clct = np.asarray(v_clct)
+    sign = np.sign(v_clct)
     e_clct = 0.5*sp.mass*cst.AMU*np.power(v_clct, 2)*cst.J2EV
+    e_clct *= sign
     return e_clct
 

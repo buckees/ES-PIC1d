@@ -83,7 +83,7 @@ pe = ps1d.Poisson_solver_1d(Mesh, chrg_den, bc, invA) # pe contains [pot, efld]
 Eon_pv = frog.move_leapfrog2(Mesh, Eon, Eon_pv, pe[1], dt)
 Hp_pv = frog.move_leapfrog2(Mesh, Hp, Hp_pv, pe[1], dt)
 
-ptcl_rec = [[], [], []] # [0] = num_ptcl; [1] = ptcl_rm; [2] = ptcl_add
+ptcl_rec = [[] for j in range(4)] # [0] = num_ptcl; [1] = ptcl_rm; [2] = ptcl_add
 ergs_mean, ergs_max = [[], []], [[], []] # [0] = Eon mean erg; [1] = Hp mean erg;
 num_iter = 5000001 # number of iterations, total 50 us
 nout_iter = int(1000.0e-9/dt) # output every 20 ns
@@ -96,10 +96,11 @@ for i in range(num_iter):
     Hp_clct[0] += v_clct[0]; Hp_clct[1] += v_clct[1];
     
     # 2nd Eon emission, 10% from Ion currrent
-    Eon_pv[0] = np.append(Eon_pv[0] + 
-                          (np.ones(len(Hp_clct[0]))*Mesh.width*1.0e-4))
-    Eon_pv[1] = np.append(Eon_pv[1] + 
-                          np.abs(Hp_clct[0]))
+    Eon_pv[0] = np.append(Eon_pv[0], 
+                          (np.ones(len(v_clct[0]))*Mesh.dx))
+    Eon_pv[1] = np.append(Eon_pv[1], 
+                          np.abs(v_clct[1]))
+    ptcl_rec[3].append(len(v_clct[0]))
     
     # update charge density at t1
     Eon_den = frog.den_asgmt(Eon_pv[0], Mesh)
