@@ -44,6 +44,7 @@ den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density
 # Operation Parameters
 num_ptcl = 10000 # number of particles, should be >> ncellx to reduce noise
 dt = 1.0e-11 # in sec
+freq = 13.65e6 # frequncy, in Hz, period = 73 ns
 
 den_per_ptcl = Eon_den_init/num_ptcl # density contained in one particle
 
@@ -84,8 +85,8 @@ Arp_pv = frog.move_leapfrog2(Mesh, Arp, Arp_pv, pe[1], dt)
 
 ptcl_rec = [[], [], []] # [0] = num_ptcl; [1] = ptcl_rm; [2] = ptcl_add
 ergs_mean, ergs_max = [[], []], [[], []] # [0] = Eon mean erg; [1] = Arp mean erg;
-num_iter = 5000001 # number of iterations
-nout_iter = 5000
+num_iter = 5000001 # number of iterations, total 50 us
+nout_iter = int(20.0e-9/dt) # output every 20 ns
 for i in range(num_iter):
     # using leapfrog algrithm to update position
     Eon_pv, v_clct = frog.move_leapfrog1(Mesh, Eon, Eon_pv, pe[1], dt)
@@ -101,7 +102,7 @@ for i in range(num_iter):
                 Arp.charge*Arp_den)*den_per_ptcl # unit in UNIT_CHARGE
     chrg_den = savgol_filter(chrg_den, 11, 3) # window size 11, polynomial order 3
     # update potential and E-field at t1
-    bc[0] = min(i/200000, 1.0)*25.0*math.sin(i/50000*2.0*math.pi)
+    bc[0] = min(i/(1e-6/dt), 1.0)*25.0*math.sin(2.0*math.pi*freq*dt*i)
     pe = ps1d.Poisson_solver_1d(Mesh, chrg_den, bc, invA) # pe contains [pot, efld]
     # update only velocity at t1
     Eon_pv = frog.move_leapfrog2(Mesh, Eon, Eon_pv, pe[1], dt)
