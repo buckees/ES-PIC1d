@@ -3,6 +3,8 @@
 #
 # Output results and diagnostics
 #
+import Constants as cst
+from Species import Eon, Hp, H
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -23,13 +25,16 @@ def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct,
     ax[0,2].plot(Ion_pv[0], Ion_pv[1], 'ro')
     ax[0,2].set_title('nPtcl=%d' % ptcl_rec[0][-1])
     
-    ax[1,0].hist(Eon_clct[0], bins=20, histtype='step', color='blue')
-    ax[1,0].hist(Eon_clct[1], bins=20, histtype='step', color='red')
-    ax[1,0].set_title('v_Eon count')
+    ax[1,0].hist(vels2ergs(Eon_clct[0], Eon), bins=20, 
+                 histtype='step', color='blue')
+    ax[1,0].hist(vels2ergs(Eon_clct[1], Eon), bins=20, 
+                 histtype='step', color='red')
+    ax[1,0].set_title('Energy count')
     ax_temp10 = ax[1,0].twinx()
-    ax_temp10.hist(Ion_clct[0], bins=20, histtype='step', color='blue')
-    ax_temp10.hist(Ion_clct[1], bins=20, histtype='step', color='red')
-    ax_temp10.set_title('v_Ar+ count')
+    ax_temp10.hist(vels2ergs(Ion_clct[0], Hp), bins=20, 
+                   histtype='bar', color='blue')
+    ax_temp10.hist(vels2ergs(Ion_clct[1], Hp), bins=20, 
+                   histtype='bar', color='red')
     
     ax[1,1].plot(ergs_mean[0], 'b-')
     ax_temp11 = ax[1,1].twinx()
@@ -44,4 +49,8 @@ def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct,
     fig.savefig('.\Figures\ITER_{:08}.png'.format(iteration))
     plt.close(fig)
 
-    
+def vels2ergs(v_clct, sp):
+    v_clct = np.asarray(v_clct)
+    e_clct = 0.5*sp.mass*cst.AMU*np.power(v_clct, 2)*cst.J2EV
+    return e_clct
+
