@@ -120,8 +120,10 @@ for i in range(num_iter):
     ergs_max[0].append(np.amax(Eon_ergs))
     ergs_max[1].append(np.amax(Arp_ergs))
     if i % nout_iter == 0:
-        print("iter = %d" % i, 
-              "- time %s -" % str(timedelta(seconds=(int(time.time() - t0)))))
+        print("iter = %d - " % i,
+              "plasma time = %d ns - " % i*dt/1e-9, 
+              " time %s -" % str(timedelta(seconds=(int(time.time() - t0)))),
+              "# of ptcl = %d" % ptcl_rec[0][-1])
         # plot animation
         out.plot_diag(Mesh, Eon_pv, Arp_pv, Eon_clct, Arp_clct, 
                       chrg_den, pe, i, ergs_mean, ergs_max, ptcl_rec,
