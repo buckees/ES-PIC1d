@@ -97,9 +97,9 @@ for i in range(num_iter):
     
     # 2nd Eon emission, 10% from Ion currrent
     Eon_pv[0] = np.append(Eon_pv[0] + 
-                          (np.zeros(len(Hp_clct[0]))+Mesh.width*1.0e-4))
+                          (np.ones(len(Hp_clct[0]))*Mesh.width*1.0e-4))
     Eon_pv[1] = np.append(Eon_pv[1] + 
-                          np.abs(Hp_clct[0])))
+                          np.abs(Hp_clct[0]))
     
     # update charge density at t1
     Eon_den = frog.den_asgmt(Eon_pv[0], Mesh)
