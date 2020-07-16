@@ -95,6 +95,12 @@ for i in range(num_iter):
     Hp_pv, v_clct = frog.move_leapfrog1(Mesh, Hp, Hp_pv, pe[1], dt)
     Hp_clct[0] += v_clct[0]; Hp_clct[1] += v_clct[1];
     
+    # 2nd Eon emission, 10% from Ion currrent
+    Eon_pv[0] = np.append(Eon_pv[0] + 
+                          (np.zeros(len(Hp_clct[0]))+Mesh.width*1.0e-4))
+    Eon_pv[1] = np.append(Eon_pv[1] + 
+                          np.abs(Hp_clct[0])))
+    
     # update charge density at t1
     Eon_den = frog.den_asgmt(Eon_pv[0], Mesh)
     Hp_den = frog.den_asgmt(Hp_pv[0], Mesh)
