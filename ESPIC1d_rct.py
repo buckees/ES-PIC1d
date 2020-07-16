@@ -18,7 +18,7 @@ def ioniz(Eon_pv, Arp_pv, dt, ptcl_add):
     # created eon has initial vels = 0.0 m/s
     idx = np.where(Eon_ergs >= 20.0)[0]
     rand = np.random.uniform(0.0, 1.0, len(idx))
-    idx = idx[rand <= 0.5*dt/1e-12]
+    idx = idx[rand <= 0.01*dt/1e-12]
 
     posn_add = Eon_pv[0][idx]
     Eon_pv[1][idx] *= np.sqrt((Eon_ergs[idx]-20.0)/Eon_ergs[idx])

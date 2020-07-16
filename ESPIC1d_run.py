@@ -121,8 +121,9 @@ for i in range(num_iter):
     ergs_max[0].append(np.amax(Eon_ergs))
     ergs_max[1].append(np.amax(Arp_ergs))
     if i % nout_iter == 0:
+        t = divmod(int(i*dt/1.0e-9), 1000)
         print("iter = %d - " % i,
-              "plasma time = %d ns - " % i*dt/1e-9, 
+              "plasma time = %d us %d ns - " % t, 
               " time %s -" % str(timedelta(seconds=(int(time.time() - t0)))),
               "# of ptcl = %d" % ptcl_rec[0][-1])
         # plot animation
