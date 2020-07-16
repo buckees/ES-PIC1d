@@ -97,9 +97,9 @@ for i in range(num_iter):
     
     # 2nd Eon emission, 10% from Ion currrent
     Eon_pv[0] = np.append(Eon_pv[0], 
-                          (np.ones(len(v_clct[0]))*Mesh.dx))
+                          np.ones(len(v_clct[0]))*Mesh.dx)
     Eon_pv[1] = np.append(Eon_pv[1], 
-                          np.abs(v_clct[1]))
+                          np.abs(v_clct[0]))
     ptcl_rec[3].append(len(v_clct[0]))
     
     # update charge density at t1
