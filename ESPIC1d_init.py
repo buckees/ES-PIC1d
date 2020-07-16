@@ -15,7 +15,7 @@ def thermal_velocity(charge, tmpt, mass):
     """
     return np.sqrt(2*abs(charge)*tmpt/mass)
 
-def norm_distribution(num_ptcl,tmpt,mass):
+def norm_distribution(num_ptcl, tmpt, mass):
     """
     Returns an array of velocities sampled from the Normal distribution
     1d maxwell velocity distribution is a normal distribution

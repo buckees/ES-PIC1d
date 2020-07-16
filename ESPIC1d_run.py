@@ -17,7 +17,7 @@ import ESPIC1d_init as init
 import ESPIC1d_leapfrog as frog
 import ESPIC1d_out as out
 import ESPIC1d_rct as rct
-from Species import Eon, Hp, Ar
+from Species import Eon, Hp, H
 import Poisson_solver_1d as ps1d
 
 # python built-in modules
@@ -32,18 +32,18 @@ Geometry and Mesh are created in ESPIC1d_mesh.py
 # Initial Conditions
 press_mT = 100.0 # pressure, in mTorr
 pressure = press_mT/1.0e3*cst.TORR2PA # in Pa, 1 Torr = 133.322 Pa
-Ar_den_init = pressure/(cst.KB*Ar.tmpt*cst.EV2K) # in m-3, N/V = P/(kb*T) ideal gas law
+H_den_init = pressure/(cst.KB*H.tmpt*cst.EV2K) # in m-3, N/V = P/(kb*T) ideal gas law
 Eon_temp = [Eon.tmpt] # initial temperature for Eon, in eV
-Hp_temp = [Hp.tmpt] # initial temperature for Ar+, in eV
+Hp_temp = [Hp.tmpt] # initial temperature for H+, in eV
 bc = [0.0, 0.0] # left and right boundary conditions, in Volt 
 Eon_clct = [[], []] # collect Eon particles bombarding left and right surface
-Hp_clct = [[], []] # collect Ar+ particles bombarding left and right surface
+Hp_clct = [[], []] # collect H+ particles bombarding left and right surface
 Eon_den_init = 1.0e15 # in m-3, initial electron density
 den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density 
 
 # Operation Parameters
-num_ptcl = 5000 # number of particles, should be >> ncellx to reduce noise
-dt = 1.0e-12 # in sec
+num_ptcl = 1000 # number of particles, should be >> ncellx to reduce noise
+dt = 1.0e-11 # in sec
 freq = 13.65e6 # frequncy, in Hz, period = 73 ns
 
 den_per_ptcl = Eon_den_init/num_ptcl # density contained in one particle
@@ -86,7 +86,7 @@ Hp_pv = frog.move_leapfrog2(Mesh, Hp, Hp_pv, pe[1], dt)
 ptcl_rec = [[], [], []] # [0] = num_ptcl; [1] = ptcl_rm; [2] = ptcl_add
 ergs_mean, ergs_max = [[], []], [[], []] # [0] = Eon mean erg; [1] = Hp mean erg;
 num_iter = 5000001 # number of iterations, total 50 us
-nout_iter = int(1.0e-9/dt) # output every 20 ns
+nout_iter = int(50.0e-9/dt) # output every 20 ns
 for i in range(num_iter):
     # using leapfrog algrithm to update position
     Eon_pv, v_clct = frog.move_leapfrog1(Mesh, Eon, Eon_pv, pe[1], dt)
