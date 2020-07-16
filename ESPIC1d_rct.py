@@ -5,7 +5,7 @@ Calc Particle generations due to reactions
 import numpy as np
 import Constants as cst
 
-def ioniz(Eon_pv, Arp_pv, dt, ptcl_add):
+def ioniz(Eon_pv, Ion_pv, dt, ptcl_add):
     """
     assume Ar ionization threshold is 10 eV
     eon energy > 100 eV rate coeff 1e-9 cm3/s = 1e-15 m3/s
@@ -24,9 +24,9 @@ def ioniz(Eon_pv, Arp_pv, dt, ptcl_add):
     Eon_pv[1][idx] *= np.sqrt((Eon_ergs[idx]-20.0)/Eon_ergs[idx])
     
     Eon_pv[0] = np.append(Eon_pv[0], posn_add)
-    Arp_pv[0] = np.append(Arp_pv[0], posn_add)
+    Ion_pv[0] = np.append(Ion_pv[0], posn_add)
     Eon_pv[1] = np.append(Eon_pv[1], np.zeros(posn_add.size))
-    Arp_pv[1] = np.append(Arp_pv[1], np.zeros(posn_add.size))
+    Ion_pv[1] = np.append(Ion_pv[1], np.zeros(posn_add.size))
     ptcl_add.append(posn_add.size)
 
-    return Eon_pv, Arp_pv, ptcl_add
+    return Eon_pv, Ion_pv, ptcl_add

@@ -13,7 +13,7 @@ class Mesh(object):
         self.gridx = gridx # an array of grids in x direction, in meter
         self.cell_cnt = cell_cnt # an array of cell center in x direction, in meter
 
-ncellx = 200
+ncellx = 50
 width = 0.10
 gridx, dx = np.linspace(0.0, width, ncellx+1, retstep=True)
 cell_cnt = (gridx[0:-1] + gridx[1:])/2.0
