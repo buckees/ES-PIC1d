@@ -85,7 +85,6 @@ def move_leapfrog2(mesh, sp, pv, efld, dt):
     whole = whole.astype(int)
     # update posn, p(t1) = p(t0) + v(t0)*dt + 0.5*a(t0)*dt*dt
     pv[1] += 0.5*accel[whole]*dt
-    pv[1] = move_coll(pv[1], 1e-3)
     return pv
 
 def move_coll(vels, prob):

@@ -97,7 +97,7 @@ for i in range(num_iter):
     
     # 2nd Eon emission, 10% from Ion currrent
     Eon_pv[0] = np.append(Eon_pv[0], 
-                          np.ones(len(v_clct[0]))*Mesh.dx)
+                          np.ones(len(v_clct[0]))*Mesh.dx*0.1)
     Eon_pv[1] = np.append(Eon_pv[1], 
                           np.abs(v_clct[0]))
     ptcl_rec[3].append(len(v_clct[0]))
@@ -113,6 +113,8 @@ for i in range(num_iter):
     pe = ps1d.Poisson_solver_1d(Mesh, chrg_den, bc, invA) # pe contains [pot, efld]
     # update only velocity at t1
     Eon_pv = frog.move_leapfrog2(Mesh, Eon, Eon_pv, pe[1], dt)
+    # elastic collision only applies to Eon
+    Eon_pv[1] = frog.move_coll(Eon_pv[1], 1e-3)
     Hp_pv = frog.move_leapfrog2(Mesh, Hp, Hp_pv, pe[1], dt)
     
     # calc eon impact ionization
