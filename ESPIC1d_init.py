@@ -30,15 +30,15 @@ def norm_distribution(num_ptcl, tmpt, mass):
     scale = np.sqrt((tmpt/mass)*(cst.KB*cst.EV2K/cst.AMU))
     return norm.rvs(loc=0.0, scale=scale, size=num_ptcl)
     
-def debye_length(eps0, eon_temp, ne):
+def debye_length(eon_temp, ne):
     """
     Calculate plasma debye length
-    :param eps0: relative permittivity
-    :param eon_temp: electron temp in eV
-    :param ne: electron density in particles/volume
-    :return: debye length
+    :param eps0: relative permittivity, no unit
+    :param eon_temp: electron temp, in eV
+    :param ne: electron # density, in m-3
+    :return: debye length, in meter
     """
-    return np.sqrt(eps0*cst.EPS0*eon_temp/ne/cst.UNIT_CHARGE)
+    return np.sqrt(cst.EPS0*eon_temp/ne/cst.UNIT_CHARGE)
 
 def init_posn(num_ptcl=10):
     """
