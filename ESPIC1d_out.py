@@ -8,7 +8,13 @@ from Species import Eon, Hp, H
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct, 
+def vels2ergs(v_clct, sp):
+    v_clct = np.asarray(v_clct)
+    sign = np.sign(v_clct)
+    e_clct = 0.5*sp.mass*cst.AMU*np.power(v_clct, 2)*cst.J2EV
+    e_clct *= sign
+    return e_clct
+
 def correct_ylimit(ax, x, y):   
    # ax: axes object handle
    #  x: data for entire x-axes
@@ -18,6 +24,7 @@ def correct_ylimit(ax, x, y):
    i = np.where( (x > lims[0]) &  (x < lims[1]) )[0]
    ax.set_ylim( y[i].min(), y[i].max() ) 
 
+def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct, 
               chrg_den, pe, iteration, ergs_mean, ergs_max, ptcl_rec,
               nout_iter):
     fig, ax = plt.subplots(3,3, figsize=(15,9),
@@ -72,11 +79,5 @@ def correct_ylimit(ax, x, y):
     fig.savefig('.\Figures\ITER_{:08}.png'.format(iteration))
     plt.close(fig)
 
-def vels2ergs(v_clct, sp):
-    v_clct = np.asarray(v_clct)
-    sign = np.sign(v_clct)
-    e_clct = 0.5*sp.mass*cst.AMU*np.power(v_clct, 2)*cst.J2EV
-    e_clct *= sign
-    return e_clct
 
     
