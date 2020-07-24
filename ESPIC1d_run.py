@@ -40,6 +40,9 @@ Eon_clct = [[], []] # collect Eon particles bombarding left and right surface
 Hp_clct = [[], []] # collect H+ particles bombarding left and right surface
 Eon_den_init = 1.0e15 # in m-3, initial electron density
 den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density 
+# 1 mTorr, mfp ~ 10 cm, col_freq ~ 5e6 s-1 
+col_freq = 5.0e8 # in s-1
+
 
 # Operation Parameters
 num_ptcl = 20000 # number of particles, should be >> ncellx to reduce noise
@@ -119,7 +122,7 @@ for i in range(num_iter):
     # update only velocity at t1
     Eon_pv = frog.move_leapfrog2(Mesh, Eon, Eon_pv, pe[1], dt)
     # elastic collision only applies to Eon
-    Eon_pv[1] = frog.move_coll(Eon_pv[1], 1e-3)
+    Eon_pv[1] = frog.move_coll(Eon_pv[1], col_freq*dt)
     Hp_pv = frog.move_leapfrog2(Mesh, Hp, Hp_pv, pe[1], dt)
     
     # calc eon impact ionization
@@ -138,7 +141,7 @@ for i in range(num_iter):
     ergs_max[0].append(np.amax(Eon_ergs))
     ergs_max[1].append(np.amax(Hp_ergs))
     
-    if i % nout_iter == 0:
+    if (i+1) % nout_iter == 0:
         t = divmod(int(i*dt/1.0e-9), 1000)
         print("iter = %d - " % i,
               "plasma time = %d us %d ns - " % t, 
