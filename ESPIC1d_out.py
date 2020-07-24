@@ -52,9 +52,16 @@ def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct,
     ax_temp10.hist(vels2ergs(Ion_clct[1], Hp), bins=20, 
                    histtype='bar', color='red')
     
-    ax[1,1].plot(ergs_mean[0], 'b-')
+    temp_xmin = iteration-10*nout_iter
+    ax[1,1].set_xlim(temp_xmin, iteration)
+    tempx = range(iteration+1)
+    tempy = np.asarray(ergs_mean[0])
+    ax[1,1].plot(tempx, tempy, 'b-')
+    correct_ylimit(ax[1,1], tempx, tempy)
     ax_temp11 = ax[1,1].twinx()
-    ax_temp11.plot(ergs_max[0], 'r-')
+    tempy = np.asarray(ergs_max[0])
+    ax_temp11.plot(tempx, tempy, 'r-')
+    correct_ylimit(ax_temp11, tempx, tempy)
     
     ax[2,0].plot(ptcl_rec[0], 'b-')
     ax[2,0].plot(ptcl_rec[3], 'r-')
@@ -62,9 +69,9 @@ def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct,
     ax_temp20.plot([tempi - tempe for tempe, tempi in 
                     zip(ptcl_rec[0], ptcl_rec[3])], 'k--')
     
-    temp_xmin = len(ptcl_rec[0])-10*nout_iter
-    ax[2,1].set_xlim(temp_xmin, len(ptcl_rec[0]))
-    tempx = range(0, len(ptcl_rec[1]),nout_iter)
+    
+    ax[2,1].set_xlim(temp_xmin, iteration)
+    tempx = range(0, iteration, nout_iter)
     tempy = np.add.reduceat(ptcl_rec[1], np.arange(0, len(ptcl_rec[1]), nout_iter))
     ax[2,1].plot(tempx[0:-1], tempy[0:-1], 'bo-')
     tempy = np.add.reduceat(ptcl_rec[4], np.arange(0, len(ptcl_rec[4]), nout_iter))
@@ -72,9 +79,9 @@ def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct,
     correct_ylimit(ax[2,1], tempx, tempy)
     ax_temp21 = ax[2,1].twinx()
     tempy = np.add.reduceat(ptcl_rec[2], np.arange(0, len(ptcl_rec[4]), nout_iter))
-    ax_temp21.plot(tempx[0:-1], tempy[0:-1], 'bo--')
+    ax_temp21.plot(tempx[0:-1], tempy[0:-1], 'bo--', mfc='none')
     tempy = np.add.reduceat(ptcl_rec[5], np.arange(0, len(ptcl_rec[5]), nout_iter))
-    ax_temp21.plot(tempx[0:-1], tempy[0:-1], 'ro--')
+    ax_temp21.plot(tempx[0:-1], tempy[0:-1], 'ro--', mfc='none')
     correct_ylimit(ax_temp21, tempx, tempy)
     fig.savefig('.\Figures\ITER_{:08}.png'.format(iteration))
     plt.close(fig)
