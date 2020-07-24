@@ -59,8 +59,8 @@ def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct,
     ax[2,0].plot(ptcl_rec[0], 'b-')
     ax[2,0].plot(ptcl_rec[3], 'r-')
     ax_temp20 = ax[2,0].twinx()
-    ax_temp20.plot([tempx - tempy for tempx, tempy in zip(ptcl_rec[0], ptcl_rec[3])],
-                   'k--')
+    ax_temp20.plot([tempi - tempe for tempe, tempi in 
+                    zip(ptcl_rec[0], ptcl_rec[3])], 'k--')
     
     temp_xmin = len(ptcl_rec[0])-10*nout_iter
     ax[2,1].set_xlim(temp_xmin, len(ptcl_rec[0]))
