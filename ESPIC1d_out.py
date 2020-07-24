@@ -9,9 +9,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct, 
+def correct_ylimit(ax, x, y):   
+   # ax: axes object handle
+   #  x: data for entire x-axes
+   #  y: data for entire y-axes
+   # assumption: you have already set the x-limit as desired
+   lims = ax.get_xlim()
+   i = np.where( (x > lims[0]) &  (x < lims[1]) )[0]
+   ax.set_ylim( y[i].min(), y[i].max() ) 
+
               chrg_den, pe, iteration, ergs_mean, ergs_max, ptcl_rec,
               nout_iter):
-    fig, ax = plt.subplots(2,3, figsize=(15,6),
+    fig, ax = plt.subplots(3,3, figsize=(15,9),
       constrained_layout=True)
     ax[0,0].hist(Eon_pv[0], bins=20, histtype='step', color='blue')
     ax[0,0].hist(Ion_pv[0], bins=20, histtype='step', color='red')
@@ -40,16 +49,26 @@ def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct,
     ax_temp11 = ax[1,1].twinx()
     ax_temp11.plot(ergs_max[0], 'r-')
     
-    ax[1,2].plot(ptcl_rec[0], 'k-')
-    ax_temp12 = ax[1,2].twinx()
-    temp = np.add.reduceat(ptcl_rec[1], np.arange(0, len(ptcl_rec[1]), nout_iter))
-    ax_temp12.plot(range(nout_iter, len(ptcl_rec[1]), nout_iter), temp[0:-1], 'g-')
-    temp = np.add.reduceat(ptcl_rec[2], np.arange(0, len(ptcl_rec[2]), nout_iter))
-    ax_temp12.plot(range(nout_iter, len(ptcl_rec[2]), nout_iter), temp[0:-1], 'y-')
-    temp = np.add.reduceat(ptcl_rec[3], np.arange(0, len(ptcl_rec[2]), nout_iter))
-    ax_temp12.plot(range(nout_iter, len(ptcl_rec[3]), nout_iter), temp[0:-1], 'c-')
-    ax_temp12.set_ylim(0, 50)
+    ax[2,0].plot(ptcl_rec[0], 'b-')
+    ax[2,0].plot(ptcl_rec[3], 'r-')
+    ax_temp20 = ax[2,0].twinx()
+    ax_temp20.plot([tempx - tempy for tempx, tempy in zip(ptcl_rec[0], ptcl_rec[3])],
+                   'k--')
     
+    temp_xmin = len(ptcl_rec[0])-10*nout_iter
+    ax[2,1].set_xlim(temp_xmin, len(ptcl_rec[0]))
+    tempx = range(0, len(ptcl_rec[1]),nout_iter)
+    tempy = np.add.reduceat(ptcl_rec[1], np.arange(0, len(ptcl_rec[1]), nout_iter))
+    ax[2,1].plot(tempx, tempy, 'bo-')
+    correct_ylimit(ax[2,1], tempx, tempy)
+    tempy = np.add.reduceat(ptcl_rec[4], np.arange(0, len(ptcl_rec[2]), nout_iter))
+    ax[2,1].plot(tempx, tempy, 'ro-')
+    ax_temp21 = ax[2,1].twinx()
+    tempy = np.add.reduceat(ptcl_rec[2], np.arange(0, len(ptcl_rec[4]), nout_iter))
+    ax_temp21.plot(tempx, tempy, 'bo--')
+    tempy = np.add.reduceat(ptcl_rec[5], np.arange(0, len(ptcl_rec[5]), nout_iter))
+    ax_temp21.plot(tempx, tempy, 'ro--')
+    correct_ylimit(ax_temp21, tempx, tempy)
     fig.savefig('.\Figures\ITER_{:08}.png'.format(iteration))
     plt.close(fig)
 
@@ -60,3 +79,4 @@ def vels2ergs(v_clct, sp):
     e_clct *= sign
     return e_clct
 
+    
