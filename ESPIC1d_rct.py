@@ -30,3 +30,19 @@ def ioniz(Eon_pv, Ion_pv, dt, ptcl_add):
     ptcl_add.append(posn_add.size)
 
     return Eon_pv, Ion_pv, ptcl_add
+
+def pow_dep(vels, Eon_ergs, powE, dt):
+    """
+    update Eon vels due to power deposition
+    power is evenly splitted to only Eons
+    power correlates to mean Te: more eons, less Te; less eons, more Te.
+    :param vels: stores the Eon vels
+    :param Eon_ergs: stores the Eon energies
+    :param powE: power deposited to Eons only
+    :param dt: timestep
+    """
+    numE = len(Eon_ergs)
+    powE_add = powE*dt*cst.J2EV/numE # power is splitted evenly by all Eons
+    ergs_change = (Eon_ergs + powE_add)/Eon_ergs # rate of energy change
+    vels = vels*ergs_change
+    return vels
