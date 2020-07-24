@@ -42,9 +42,10 @@ Eon_den_init = 1.0e15 # in m-3, initial electron density
 den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density 
 
 # Operation Parameters
-num_ptcl = 1000 # number of particles, should be >> ncellx to reduce noise
-dt = 1.0e-10 # in sec
-freq = 13.65e6 # frequncy, in Hz, period = 73 ns
+num_ptcl = 10000 # number of particles, should be >> ncellx to reduce noise
+freq = 10.0e6 # frequncy, in Hz, period = 100 ns
+perd = 1.0/freq # period = 100 ns
+dt = perd/1000.0 # in sec
 
 den_per_ptcl = Eon_den_init/num_ptcl # density contained in one particle
 
@@ -83,10 +84,12 @@ pe = ps1d.Poisson_solver_1d(Mesh, chrg_den, bc, invA) # pe contains [pot, efld]
 Eon_pv = frog.move_leapfrog2(Mesh, Eon, Eon_pv, pe[1], dt)
 Hp_pv = frog.move_leapfrog2(Mesh, Hp, Hp_pv, pe[1], dt)
 
-ptcl_rec = [[] for j in range(4)] # [0] = num_ptcl; [1] = ptcl_rm; [2] = ptcl_add
-ergs_mean, ergs_max = [[], []], [[], []] # [0] = Eon mean erg; [1] = Hp mean erg;
+# Eon: [0] = num_ptcl ; [1] = ptcl_rm; [2] = ptcl_add
+# Arp: [3] = num_ptcl ; [4] = ptcl_rm; [5] = ptcl_add
+ptcl_rec = [[] for j in range(6)]
+ergs_mean, ergs_max = [[], []], [[], []] # [0] = Eon mean erg; [1] = Arp mean erg;
 num_iter = 5000001 # number of iterations, total 50 us
-nout_iter = int(1000.0e-9/dt) # output every 20 ns
+nout_iter = int(perd/dt) # output every xxx ns
 for i in range(num_iter):
     # using leapfrog algrithm to update position
     Eon_pv, v_clct = frog.move_leapfrog1(Mesh, Eon, Eon_pv, pe[1], dt)
@@ -120,15 +123,19 @@ for i in range(num_iter):
     # calc eon impact ionization
     Eon_pv, Hp_pv, ptcl_rec[2] = rct.ioniz(Eon_pv, Hp_pv, dt, 
                                          ptcl_rec[2])
+    ptcl_rec[5] = ptcl_rec[2].copy()
+
     # convert vels to ergs
     Eon_ergs = np.power(Eon_pv[1]*cst.VEL2EV,2) 
     Hp_ergs = np.power(Hp_pv[1]*cst.VEL2EV,2) 
     
     ptcl_rec[0].append(len(Eon_pv[0]))
+    ptcl_rec[3].append(len(Arp_pv[0]))
     ergs_mean[0].append(np.mean(Eon_ergs))
     ergs_mean[1].append(np.mean(Hp_ergs))
     ergs_max[0].append(np.amax(Eon_ergs))
     ergs_max[1].append(np.amax(Hp_ergs))
+    
     if i % nout_iter == 0:
         t = divmod(int(i*dt/1.0e-9), 1000)
         print("iter = %d - " % i,
