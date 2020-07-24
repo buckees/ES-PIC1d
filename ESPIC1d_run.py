@@ -42,10 +42,10 @@ Eon_den_init = 1.0e15 # in m-3, initial electron density
 den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density 
 
 # Operation Parameters
-num_ptcl = 10000 # number of particles, should be >> ncellx to reduce noise
+num_ptcl = 20000 # number of particles, should be >> ncellx to reduce noise
 freq = 10.0e6 # frequncy, in Hz, period = 100 ns
 perd = 1.0/freq # period = 100 ns
-dt = perd/1000.0 # in sec
+dt = perd/2000.0 # in sec
 
 den_per_ptcl = Eon_den_init/num_ptcl # density contained in one particle
 
@@ -97,6 +97,7 @@ for i in range(num_iter):
     ptcl_rec[1].append(len(v_clct[0]) + len(v_clct[1]))
     Hp_pv, v_clct = frog.move_leapfrog1(Mesh, Hp, Hp_pv, pe[1], dt)
     Hp_clct[0] += v_clct[0]; Hp_clct[1] += v_clct[1];
+    ptcl_rec[4].append(len(v_clct[0]) + len(v_clct[1]))
     
     # 2nd Eon emission, 10% from Ion currrent
     Eon_pv[0] = np.append(Eon_pv[0], 
@@ -112,7 +113,8 @@ for i in range(num_iter):
                 Hp.charge*Hp_den)*den_per_ptcl # unit in UNIT_CHARGE
     chrg_den = savgol_filter(chrg_den, 11, 3) # window size 11, polynomial order 3
     # update potential and E-field at t1
-    bc[0] = min(i/(1e-6/dt), 1.0)*(-25.0)
+#    bc[0] = min(i/(1e-6/dt), 1.0)*(-25.0)
+    bc[0] = min(i/(nout_iter*10), 1.0)*0.0*math.sin(2.0*math.pi*freq*dt*i)
     pe = ps1d.Poisson_solver_1d(Mesh, chrg_den, bc, invA) # pe contains [pot, efld]
     # update only velocity at t1
     Eon_pv = frog.move_leapfrog2(Mesh, Eon, Eon_pv, pe[1], dt)
@@ -130,7 +132,7 @@ for i in range(num_iter):
     Hp_ergs = np.power(Hp_pv[1]*cst.VEL2EV,2) 
     
     ptcl_rec[0].append(len(Eon_pv[0]))
-    ptcl_rec[3].append(len(Arp_pv[0]))
+    ptcl_rec[3].append(len(Hp_pv[0]))
     ergs_mean[0].append(np.mean(Eon_ergs))
     ergs_mean[1].append(np.mean(Hp_ergs))
     ergs_max[0].append(np.amax(Eon_ergs))
