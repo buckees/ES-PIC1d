@@ -133,7 +133,7 @@ for i in range(num_iter):
     Hp_ergs = np.power(Hp_pv[1]*cst.VEL2EV,2) 
 
     # update Eon_pv due to power deposition
-    Eon_pv[1] = rct.pow_dep(Eon_pv[1], Eon_ergs, powE, dt)
+    Eon_pv[1] = rct.pow_dep(Eon_pv[1], Eon_ergs, powE/den_per_ptcl, dt)
     
     ptcl_rec[0].append(len(Eon_pv[0]))
     ptcl_rec[3].append(len(Hp_pv[0]))

@@ -52,7 +52,7 @@ def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct,
     ax_temp10.hist(vels2ergs(Ion_clct[1], Hp), bins=20, 
                    histtype='bar', color='red')
     
-    temp_xmin = iteration-10*nout_iter
+    temp_xmin = iteration-30*nout_iter
     ax[1,1].set_xlim(temp_xmin, iteration)
     tempx = range(iteration+1)
     tempy = np.asarray(ergs_mean[0])
