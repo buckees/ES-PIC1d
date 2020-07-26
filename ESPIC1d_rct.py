@@ -65,6 +65,6 @@ def pow_dep(vels, Eon_ergs, powE, dt, imod):
         powE_add = powE*dt*cst.J2EV*(Eon_ergs/np.sum(Eon_ergs))
     # rate of energy change
     ergs_change = np.divide((Eon_ergs + powE_add), Eon_ergs, 
-                            out=Eon_ergs, where=Eon_ergs!=0)
+                            out=np.ones_like(Eon_ergs), where=Eon_ergs!=0)
     vels = vels*np.power(ergs_change,0.5)
     return vels
