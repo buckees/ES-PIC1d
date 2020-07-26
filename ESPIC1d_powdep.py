@@ -42,7 +42,7 @@ Eon_den_init = 1.0e15 # in m-3, initial electron density
 den_limit = 1.0e11 # in m-3, lower limit of denisty, avoid 0 density 
 # 1 mTorr, mfp ~ 10 cm, col_freq ~ 5e6 s-1 
 col_freq = 5.0e8 # in s-1
-powE = 100 # in W, power is deposited only to Eon
+powE = 1000 # in W, power is deposited only to Eon
 
 # Operation Parameters
 num_ptcl = 20000 # number of particles, should be >> ncellx to reduce noise
@@ -132,8 +132,8 @@ for i in range(num_iter):
     Eon_ergs = np.power(Eon_pv[1]*cst.VEL2EV,2) 
     Hp_ergs = np.power(Hp_pv[1]*cst.VEL2EV,2) 
 
-    # update Eon_pv due to power deposition
-    Eon_pv[1] = rct.pow_dep(Eon_pv[1], Eon_ergs, powE/den_per_ptcl, dt)
+    # update Eon_pv[1] due to power deposition
+    Eon_pv[1] = rct.pow_dep(Eon_pv[1], Eon_ergs, powE/den_per_ptcl, dt, 2)
     
     ptcl_rec[0].append(len(Eon_pv[0]))
     ptcl_rec[3].append(len(Hp_pv[0]))

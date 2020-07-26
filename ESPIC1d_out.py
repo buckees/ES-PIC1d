@@ -40,36 +40,36 @@ def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct,
     ax[0,2].plot(Eon_pv[0], vels2ergs(Eon_pv[1], Eon), 'bo')
     ax[0,2].plot(Ion_pv[0], vels2ergs(Ion_pv[1], Hp),  'ro')
     ax[0,2].set_title('nPtcl=%d' % ptcl_rec[0][-1])
-    
+
     ax[1,0].hist(vels2ergs(Eon_clct[0], Eon), bins=20, 
-                 histtype='step', color='blue')
+                 histtype='bar', color='blue')
     ax[1,0].hist(vels2ergs(Eon_clct[1], Eon), bins=20, 
-                 histtype='step', color='red')
-    ax[1,0].set_title('Energy count')
-    ax_temp10 = ax[1,0].twinx()
-    ax_temp10.hist(vels2ergs(Ion_clct[0], Hp), bins=20, 
+                 histtype='bar', color='red')
+    ax[1,0].set_title('Eon Energy count')
+    
+    ax[1,1].hist(vels2ergs(Ion_clct[0], Hp), bins=20, 
                    histtype='bar', color='blue')
-    ax_temp10.hist(vels2ergs(Ion_clct[1], Hp), bins=20, 
+    ax[1,1].hist(vels2ergs(Ion_clct[1], Hp), bins=20, 
                    histtype='bar', color='red')
+    ax[1,1].set_title('Ion Energy count')
     
     temp_xmin = iteration-30*nout_iter
-    ax[1,1].set_xlim(temp_xmin, iteration)
+    ax[1,2].set_xlim(temp_xmin, iteration)
     tempx = range(iteration+1)
     tempy = np.asarray(ergs_mean[0])
-    ax[1,1].plot(tempx, tempy, 'b-')
-    correct_ylimit(ax[1,1], tempx, tempy)
-    ax_temp11 = ax[1,1].twinx()
+    ax[1,2].plot(tempx, tempy, 'b-')
+    correct_ylimit(ax[1,2], tempx, tempy)
+    ax_temp12 = ax[1,2].twinx()
     tempy = np.asarray(ergs_max[0])
-    ax_temp11.plot(tempx, tempy, 'r-')
-    correct_ylimit(ax_temp11, tempx, tempy)
+    ax_temp12.plot(tempx, tempy, 'r-')
+    correct_ylimit(ax_temp12, tempx, tempy)
     
     ax[2,0].plot(ptcl_rec[0], 'b-')
     ax[2,0].plot(ptcl_rec[3], 'r-')
     ax_temp20 = ax[2,0].twinx()
     ax_temp20.plot([tempi - tempe for tempe, tempi in 
                     zip(ptcl_rec[0], ptcl_rec[3])], 'k--')
-    
-    
+        
     ax[2,1].set_xlim(temp_xmin, iteration)
     tempx = range(0, iteration, nout_iter)
     tempy = np.add.reduceat(ptcl_rec[1], np.arange(0, len(ptcl_rec[1]), nout_iter))
@@ -83,8 +83,10 @@ def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct,
     tempy = np.add.reduceat(ptcl_rec[5], np.arange(0, len(ptcl_rec[5]), nout_iter))
     ax_temp21.plot(tempx[0:-1], tempy[0:-1], 'ro--', mfc='none')
     correct_ylimit(ax_temp21, tempx, tempy)
+    
+    ax[2,2].hist(vels2ergs(Eon_pv[1], Eon), bins=20, 
+                 histtype='step', color='blue')
+    ax[2,2].set_title('EEDF')
+
     fig.savefig('.\Figures\ITER_{:08}.png'.format(iteration))
     plt.close(fig)
-
-
-    

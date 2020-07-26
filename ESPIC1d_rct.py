@@ -44,7 +44,7 @@ def ioniz_prob(ergs):
     prob = np.exp(0.05*ergs - 8.0)
     return prob
 
-def pow_dep(vels, Eon_ergs, powE, dt):
+def pow_dep(vels, Eon_ergs, powE, dt, imod):
     """
     update Eon vels due to power deposition
     power can be splitted to Eons evenly or due to some distribution
@@ -53,10 +53,18 @@ def pow_dep(vels, Eon_ergs, powE, dt):
     :param Eon_ergs: stores the Eon energies
     :param powE: power deposited to Eons only
     :param dt: timestep
+    :param imod: the mode of how power is dissipated to Eons
     """
     # instead of evenly splitted the power
-    # power is depositted more to "hot" Eons
-    powE_add = powE*dt*cst.J2EV*(Eon_ergs/np.sum(Eon_ergs))
-    ergs_change = (Eon_ergs + powE_add)/Eon_ergs # rate of energy change
+    if imod == 1:
+        # power is randomly depositted more to Eons
+        rand = np.random.uniform(0.0, 1.0, len(Eon_ergs))
+        powE_add = powE*dt*cst.J2EV*(rand/np.sum(rand))
+    elif imod == 2:
+        # power is depositted more to "hot" Eons
+        powE_add = powE*dt*cst.J2EV*(Eon_ergs/np.sum(Eon_ergs))
+    # rate of energy change
+    ergs_change = np.divide((Eon_ergs + powE_add), Eon_ergs, 
+                            out=Eon_ergs, where=Eon_ergs!=0)
     vels = vels*np.power(ergs_change,0.5)
     return vels
