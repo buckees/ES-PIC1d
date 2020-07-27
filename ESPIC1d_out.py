@@ -85,7 +85,7 @@ def plot_diag(mesh, Eon_pv, Ion_pv, Eon_clct, Ion_clct,
     correct_ylimit(ax_temp21, tempx, tempy)
     
     ax[2,2].hist(vels2ergs(Eon_pv[1], Eon), bins=20, 
-                 histtype='step', color='blue')
+                 histtype='bar', color='blue')
     ax[2,2].set_title('EEDF')
 
     fig.savefig('.\Figures\ITER_{:08}.png'.format(iteration))
